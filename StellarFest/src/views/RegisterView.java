@@ -49,6 +49,7 @@ public class RegisterView {
 
         layout.getChildren().addAll(
                 usernameLabel, usernameField,
+                emailLabel, emailField,
                 passwordLabel, passwordField,
                 roleLabel, roleComboBox,
                 registerButton, goToLoginButton
@@ -68,9 +69,10 @@ public class RegisterView {
     	if(UserController.checkRegisterInput(email, username, password)) {
     		UserController.register(email, selectedRole, password, role);
     	}
-
-
         showAlert("Registration Successful", "User " + username + " registered as " + selectedRole + " successfully!");
+//        if(selectedRole.equals("admin")) {
+//        	new AdminRView(primaryStage).show();
+//        }
         new LoginView(primaryStage).show();
     }
 

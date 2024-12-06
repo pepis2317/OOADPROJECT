@@ -38,7 +38,7 @@ public class LoginView  {
             loginButton, goToRegisterButton
         );
 
-        Scene loginScene = new Scene(layout, 300, 200);
+        Scene loginScene = new Scene(layout, 300, 300);
         primaryStage.setScene(loginScene);
     }
 
