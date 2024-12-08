@@ -20,7 +20,7 @@ public class RegisterView {
     }
 
     public void show() {
-        VBox layout = new VBox(10);
+        VBox layout = new VBox();
         layout.setStyle("-fx-padding: 20; -fx-alignment: center;");
         Label emailLabel = new Label("Email:");
         TextField emailField = new TextField();
@@ -69,18 +69,6 @@ public class RegisterView {
     	if(UserController.checkRegisterInput(email, username, password)) {
     		UserController.register(email, selectedRole, password, role);
     	}
-        showAlert("Registration Successful", "User " + username + " registered as " + selectedRole + " successfully!");
-//        if(selectedRole.equals("admin")) {
-//        	new AdminRView(primaryStage).show();
-//        }
         new LoginView(primaryStage).show();
-    }
-
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }
