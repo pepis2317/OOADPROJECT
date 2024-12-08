@@ -42,8 +42,10 @@ public abstract class TopMenuBar {
         	MenuItem viewInvitations = new MenuItem("View Invitations");
         	viewAcceptedEvents.setOnAction(e->{
         		
+        		
         	});
         	viewInvitations.setOnAction(e->{
+        		
         		
         	});
         	menu.getItems().add(viewAcceptedEvents);
