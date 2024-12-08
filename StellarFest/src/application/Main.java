@@ -16,8 +16,8 @@ import javafx.scene.layout.BorderPane;
 public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
-//		new LoginView(primaryStage).show();
-        new AdminEventsView(primaryStage).show();
+		new LoginView(primaryStage).show();
+//        new AdminEventsView(primaryStage).show();
         primaryStage.show();
 	}
 	

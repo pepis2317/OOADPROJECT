@@ -34,6 +34,7 @@ public class UserRepository {
 			System.err.println("Error fetching users: " + e.getMessage());
 			e.printStackTrace();
 		}
+		
 		return users;
 	}
 
@@ -108,6 +109,7 @@ public class UserRepository {
 				String name = res.getString("user_name");
 				String password = res.getString("user_password");
 				String role = res.getString("user_role");
+				
 				return UserFactory.create(id, email, name, password, role);
 			}
 		} catch (SQLException e) {
@@ -162,6 +164,7 @@ public class UserRepository {
 	            + "FROM Users "
 	            + "JOIN Invitations ON Invitations.user_id = Users.user_id "
 	            + "WHERE Invitations.event_id = ? "
+	            + "AND Invitations.invitation_status = 'accepted'"
 	            + "AND Invitations.invitation_role = 'vendor';";
 	    
 	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -196,6 +199,7 @@ public class UserRepository {
 	            + "FROM Users "
 	            + "JOIN Invitations ON Invitations.user_id = Users.user_id "
 	            + "WHERE Invitations.event_id = ? "
+	            + "AND Invitations.invitation_status = 'accepted'"
 	            + "AND Invitations.invitation_role = 'guest';";
 	    
 	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
