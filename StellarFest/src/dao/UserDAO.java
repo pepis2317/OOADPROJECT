@@ -1,4 +1,4 @@
-package repositories;
+package dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,12 +11,16 @@ import factories.UserFactory;
 import models.Guest;
 import models.User;
 import models.Vendor;
-import singletons.DatabaseConnection;
+import utils.DatabaseConnection;
 
-public class UserRepository {
-	private static Connection connection = DatabaseConnection.connect();
+public class UserDAO {
+	private Connection connection;
+	
+	public UserDAO() {
+		this.connection = DatabaseConnection.connect();
+	}
 
-	public static List<User> getUsers() {
+	public List<User> getUsers() {
 		List<User> users = new ArrayList<>();
 		String query = "SELECT * FROM Users";
 		try (PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -37,7 +41,7 @@ public class UserRepository {
 		return users;
 	}
 
-	public static User getUserByEmail(String user_email) {
+	public User getUserByEmail(String user_email) {
 		String query = "SELECT * FROM Users WHERE user_email = ?";
 		try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 			preparedStatement.setString(1, user_email);
@@ -49,15 +53,17 @@ public class UserRepository {
 				String name = res.getString("user_name");
 				String password = res.getString("user_password");
 				String role = res.getString("user_role");
+				
 				return UserFactory.create(id, email, name, password, role);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		
 		return null;
 	}
 
-	public static void deleteUser(String user_id) {
+	public boolean deleteUser(String user_id) {
 		String query = "DELETE FROM Users WHERE user_id = ?";
 
 	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -65,17 +71,16 @@ public class UserRepository {
 
 	        int rowsDeleted = preparedStatement.executeUpdate();
 
-	        if (rowsDeleted > 0) {
-	            System.out.println("User deleted successfully.");
-	        } else {
-	            System.out.println("No user found with the given ID.");
-	        }
+	        return rowsDeleted > 0;
+	        
 	    } catch (SQLException e) {
 	        System.err.println("Error deleting user: " + e.getMessage());
 	        e.printStackTrace();
 	    }
+	    
+	    return false;
 	}
-	public static User getUserByUsername(String user_name) {
+	public User getUserByUsername(String user_name) {
 		String query = "SELECT * FROM Users WHERE user_name = ?";
 		try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 			preparedStatement.setString(1, user_name);
@@ -95,28 +100,7 @@ public class UserRepository {
 		return null;
 	}
 
-	public static User login(String user_email, String user_password) {
-		String query = "SELECT * FROM Users WHERE user_email = ? AND user_password = ?";
-		try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-			preparedStatement.setString(1, user_email);
-			preparedStatement.setString(2, user_password);
-			ResultSet res = preparedStatement.executeQuery();
-
-			if (res.next()) {
-				String id = res.getString("user_id");
-				String email = res.getString("user_email");
-				String name = res.getString("user_name");
-				String password = res.getString("user_password");
-				String role = res.getString("user_role");
-				return UserFactory.create(id, email, name, password, role);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	public static void register(String user_email, String user_name, String user_password, String user_role) {
+	public boolean addUser(String user_email, String user_name, String user_password, String user_role) {
 		String query = "INSERT INTO Users (user_email, user_name, user_password, user_role) VALUES (?, ?, ?, ?)";
 
 	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -127,15 +111,16 @@ public class UserRepository {
 
 	        int rowsInserted = preparedStatement.executeUpdate();
 
-	        if (rowsInserted > 0) {
-	            System.out.println("User registered successfully!");
-	        }
+	        return rowsInserted > 0;
 	    } catch (SQLException e) {
 	        System.err.println("Error registering user: " + e.getMessage());
 	        e.printStackTrace();
 	    }
+	    
+	    return false;
 	}
-	public static void changeProfile(String user_id, String user_email, String user_name, String user_password) {
+	
+	public void changeProfile(String user_id, String user_email, String user_name, String user_password) {
 	    String query = "UPDATE Users SET user_email = ?, user_name = ?, user_password = ? WHERE user_id = ?";
 
 	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -156,7 +141,7 @@ public class UserRepository {
 	        e.printStackTrace();
 	    }
 	}
-	public static List<Vendor> getVendors(String event_id) {
+	public List<Vendor> getVendors(String event_id) {
 	    List<Vendor> vendors = new ArrayList<>();
 	    String query = "SELECT Users.user_id, Users.user_email, Users.user_name, Users.user_password, Users.user_role "
 	            + "FROM Users "
@@ -190,7 +175,7 @@ public class UserRepository {
 	    }
 	    return vendors;
 	}
-	public static List<Guest> getGuests(String event_id) {
+	public List<Guest> getGuests(String event_id) {
 	    List<Guest> guests = new ArrayList<>();
 	    String query = "SELECT Users.user_id, Users.user_email, Users.user_name, Users.user_password, Users.user_role "
 	            + "FROM Users "
@@ -226,7 +211,7 @@ public class UserRepository {
 	    }
 	    return guests;
 	}
-	public static List<Guest> getAllGuests(){
+	public List<Guest> getAllGuests(){
 		List<Guest> guests = new ArrayList<>();
 	    String query = "SELECT Users.user_id, Users.user_email, Users.user_name, Users.user_password, Users.user_role "
 	            + "FROM Users "
@@ -260,7 +245,7 @@ public class UserRepository {
 	    }
 	    return guests;
 	}
-	public static List<Vendor> getAllVendors() {
+	public List<Vendor> getAllVendors() {
 	    List<Vendor> vendors = new ArrayList<>();
 	    String query = "SELECT Users.user_id, Users.user_email, Users.user_name, Users.user_password, Users.user_role "
 	            + "FROM Users "
