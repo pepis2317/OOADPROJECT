@@ -1,11 +1,11 @@
-package singletons;
+package utils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
-    private static final String URL = "jdbc:mysql://localhost:3306/StellarFestDB";
+    private static final String URL = "jdbc:mysql://localhost:3306/stellarfestdb";
     private static final String USER = "root";
     private static final String PASSWORD = "";
     private static volatile Connection instance = null;
@@ -28,20 +28,8 @@ public class DatabaseConnection {
                     }
         		}
         	}
-            
         }
+        
         return instance;
-    }
-
-    public static void disconnect() {
-        if (instance != null) {
-            try {
-                instance.close();
-                System.out.println("Database connection closed.");
-            } catch (SQLException e) {
-                System.err.println("Failed to close the database connection.");
-                e.printStackTrace();
-            }
-        }
     }
 }

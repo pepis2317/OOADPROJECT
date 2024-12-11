@@ -1,4 +1,4 @@
-package repositories;
+package dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,11 +12,16 @@ import factories.UserFactory;
 import models.Event;
 import models.Guest;
 import models.User;
-import singletons.DatabaseConnection;
+import utils.DatabaseConnection;
 
-public class EventRepository {
-	private static Connection connection = DatabaseConnection.connect();
-	public static List<Event> getEvents(){
+public class EventDAO {
+	private Connection connection;
+	
+	public EventDAO() {
+		this.connection = DatabaseConnection.connect();
+	}
+	
+	public List<Event> getEvents(){
 		List<Event> events = new ArrayList<>();
 		String query = "SELECT * FROM Events";
 		try (PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -37,7 +42,8 @@ public class EventRepository {
 		}
 		return events;
 	}
-	public static List<Event> getEventsByOrganizerId(String organizer_id){
+	
+	public List<Event> getEventsByOrganizerId(String organizer_id){
 		List<Event> events = new ArrayList<>();
 		String query = "SELECT * FROM Events WHERE organizer_id = ?";
 		try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -59,7 +65,9 @@ public class EventRepository {
 			e.printStackTrace();
 		}
 		return events;
-	}public static Event getEventById(String event_id){
+	}
+	
+	public Event getEventById(String event_id){
 		String query = "SELECT * FROM Events WHERE event_id = ?";
 		try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 			preparedStatement.setString(1, event_id);
@@ -79,7 +87,7 @@ public class EventRepository {
 		}
 		return null;
 	}
-	public static void createEvent(String event_name, String event_date, String event_location, String event_description, String organizer_id) {
+	public void createEvent(String event_name, String event_date, String event_location, String event_description, String organizer_id) {
 		String query = "INSERT INTO Events (event_name, event_date, event_location, event_description, organizer_id) VALUES (?, ?, ?, ?, ?)";
 
 	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -99,7 +107,7 @@ public class EventRepository {
 	        e.printStackTrace();
 	    }
 	}
-	public static void deleteEvent(String event_id) {
+	public void deleteEvent(String event_id) {
 		String query = "DELETE FROM Events WHERE event_id = ?";
 
 	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -117,7 +125,7 @@ public class EventRepository {
 	        e.printStackTrace();
 	    }
 	}
-	public static void editEventName(String event_id, String event_name) {
+	public void editEventName(String event_id, String event_name) {
 		String query = "UPDATE Users SET event_name = ? WHERE event_id = ?";
 
 	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -136,7 +144,7 @@ public class EventRepository {
 	        e.printStackTrace();
 	    }
 	}
-	public static List<Event> getAcceptedEvents(String user_id) {
+	public List<Event> getAcceptedEvents(String user_id) {
 		List<Event> events = new ArrayList<>();
 	    String query = "SELECT Events.event_id, Events.event_name, Events.event_date, Events.event_location, Events.event_description, Events.organizer_id FROM Events "
 	    		+ "JOIN Invitations ON Invitations.event_id = Events.event_id "
@@ -144,11 +152,9 @@ public class EventRepository {
 	    		+ " AND Invitations.invitation_status = 'accepted';";
 	    
 	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-	        // Set the parameter before executing the query
 	        preparedStatement.setString(1, user_id);
 	        
 	        try (ResultSet resultSet = preparedStatement.executeQuery()) {
-	            // Process the result set
 	            while (resultSet.next()) {
 	            	String id = resultSet.getString("event_id");
 					String name = resultSet.getString("event_name");
