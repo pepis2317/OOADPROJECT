@@ -2,37 +2,49 @@ package controllers;
 
 import java.util.List;
 
+import dao.EventDAO;
+import dao.InvitationDAO;
+import dao.ProductDAO;
+import dao.UserDAO;
 import models.Event;
 import models.Product;
 import models.User;
-import repositories.EventRepository;
-import repositories.InvitationRepository;
-import repositories.ProductRepository;
-import repositories.UserRepository;
-import singletons.UserSession;
+import utils.UserSession;
 
 public class VendorController {
-	public static void acceptInvitation(String event_id) {
+	private EventDAO eventDAO;
+	private InvitationDAO invitationDAO;
+	private ProductDAO productDAO;
+	private UserDAO userDAO;
+	
+	public VendorController() {
+		this.eventDAO = new EventDAO();
+		this.invitationDAO = new InvitationDAO();
+		this.productDAO = new ProductDAO();
+		this.userDAO = new UserDAO();
+	}
+	
+	public void acceptInvitation(String event_id) {
 		UserSession session = UserSession.getInstance();
 		User user = session.getUser();
-		if(user!=null) {
-			InvitationRepository.acceptInvitation(user.getUser_id(), event_id);
+		if(user != null) {
+			invitationDAO.acceptInvitation(user.getUser_id(), event_id);
 		}
 	}
-	public static List<Event> viewAcceptedEvents(String user_email){
+	public List<Event> viewAcceptedEvents(String user_email){
 		if(user_email.isEmpty()) {
 			return null;
 		}
-		User user = UserRepository.getUserByEmail(user_email);
+		User user = userDAO.getUserByEmail(user_email);
 		if(user!=null) {
-			return EventRepository.getAcceptedEvents(user.getUser_id());
+			return eventDAO.getAcceptedEvents(user.getUser_id());
 		}
 		return null;
 	}
-	//ini buat apa masyalah
-	public static void manageVendor(String product_description, String product_name){
+
+	public void manageVendor(String product_description, String product_name){
 		UserSession session = UserSession.getInstance();
 		User user = session.getUser();
-		ProductRepository.addProduct(product_name, product_description, user.getUser_id());
+		productDAO.addProduct(product_name, product_description, user.getUser_id());
 	}
 }
