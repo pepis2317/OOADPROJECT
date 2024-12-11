@@ -1,70 +1,71 @@
 package controllers;
 
+import javax.management.relation.Role;
+
+import dao.UserDAO;
 import models.User;
-import repositories.UserRepository;
-import singletons.UserSession;
+import utils.Response;
+import utils.Route;
+import utils.UserSession;
 
 public class UserController {
-	public static void register(String user_email, String user_name, String user_password, String user_role) {
-		if(checkRegisterInput(user_email,user_name, user_password)) {
-			UserRepository.register(user_email, user_name, user_password, user_role);
-		}
-	}
-	public static void login(String user_email, String user_password) {
-		if(!user_email.isBlank()&&!user_password.isBlank()) {
-			User user = UserRepository.login(user_email, user_password);
-			if(user!=null) {
-				UserSession session = UserSession.getInstance();
-				session.setUser(user);
-			}
-		}
-	}
-	public static void changeProfile(String user_email, String user_name, String old_password, String new_password) {
-		UserSession session = UserSession.getInstance();
-		User user = session.getUser();
-		if(user!=null && checkChangeProfileInput(user_email,user_name, old_password, new_password)) {
-			UserRepository.changeProfile(user.getUser_id(), user_email, user_name, new_password);
-		}
-	}
-	public static User getUserByEmail(String user_email) {
-		if(user_email.isBlank()) {
-			return null;
-		}
-		return UserRepository.getUserByEmail(user_email);
-	}
-	public static User getUserByUsername(String user_name) {
-		if(user_name.isBlank()) {
-			return null;
-		}
-		return UserRepository.getUserByUsername(user_name);
-	}
-	public static boolean checkRegisterInput(String user_email, String user_name, String user_password) {
-		if(user_email.isBlank()|| user_name.isBlank()||user_password.isBlank()) {
-			return false;
-		}
-		User user = UserRepository.getUserByEmail(user_email);
-		if(user!=null) {
-			return false;
-		}
-		user = UserRepository.getUserByUsername(user_name);
-		if(user!=null) {
-			return false;
-		}
-		if(user_password.length() < 5) {
-			return false;
-		}
-		return true;
-	}
-	public static boolean checkChangeProfileInput(String user_email, String user_name, String old_password, String new_password) {
-		UserSession session = UserSession.getInstance();
-		User user = session.getUser();
-		if(!old_password.equals(user.getUser_password())) {
-			return false;
-		}
-		if(!checkRegisterInput(user_email, user_name, new_password)) {
-			return false;
-		}
-		return true;
+	private UserDAO userDAO;
+	private Route route;
+	
+	public UserController() {
+		this.userDAO = new UserDAO();
+		this.route = new Route();
 	}
 	
+	public Response login(String email, String password) {
+		User user = userDAO.getUserByEmail(email);
+		
+		if(email.isEmpty() || password.isEmpty()) {
+			return new Response(false, "One or more fields are empty!");
+		}
+			
+		if(user == null) {
+			return new Response(false, "Email is not recognized!");
+		}
+		
+		if(!user.getUser_password().equals(password)) {
+			return new Response(false, "Password is incorrect!");
+		}
+		
+		UserSession session = UserSession.getInstance();
+		session.setUser(user);
+		
+//		route.redirect("home");
+		return new Response(true, "Success");
+	}
+	
+	private Response checkRegisterInput(String email, String username, String password) {
+		if(email.isEmpty() || username.isEmpty() || password.isEmpty()) {
+			return new Response(false, "One or more fields are empty!");
+		}
+		
+		if(userDAO.getUserByEmail(email) != null || userDAO.getUserByUsername(username) != null) {
+			return new Response(false, "Found another user with the same email or username!");
+		}
+		
+		if(password.length() < 5) {
+			return new Response(false, "Password must be at least 5 characters long!");
+		}
+		
+		return new Response(true, "Success");
+	}
+	
+	public Response register(String email, String username, String password, String role) {
+		Response inputCheckResponse = checkRegisterInput(email, username, password);
+		
+		if(inputCheckResponse.isSuccessful()) {
+			if(!userDAO.addUser(email, username, password, role)) {
+				return new Response(false, "Error in creating new user!");
+			}
+			
+			route.redirect("login");
+		}
+		
+		return inputCheckResponse;
+	}
 }

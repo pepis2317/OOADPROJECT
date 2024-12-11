@@ -1,4 +1,4 @@
-package repositories;
+package dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,12 +9,17 @@ import java.util.List;
 
 import factories.InvitationFactory;
 import models.Invitation;
-import singletons.DatabaseConnection;
+import utils.DatabaseConnection;
 
 
-public class InvitationRepository {
-	private static Connection connection = DatabaseConnection.connect();
-	public static List<Invitation> getInvitations(){
+public class InvitationDAO {
+	private Connection connection;
+	
+	public InvitationDAO() {
+		this.connection = DatabaseConnection.connect();
+	}
+	
+	public List<Invitation> getInvitations(){
 		List<Invitation> invites = new ArrayList<>();
 		String query = "SELECT * FROM Invitations";
 		try (PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -34,7 +39,7 @@ public class InvitationRepository {
 		}
 		return invites;
 	}
-	public static List<Invitation> getInvitationsByUserId(String user_id) {
+	public List<Invitation> getInvitationsByUserId(String user_id) {
 		List<Invitation> invites = new ArrayList<>();
 		String query = "SELECT * FROM Invitations WHERE user_id = ?";
 		try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -56,7 +61,7 @@ public class InvitationRepository {
 		}
 		return invites;
 	}
-	public static void createInvitation(String event_id, String user_id, String user_role) {
+	public void createInvitation(String event_id, String user_id, String user_role) {
 		String query = "INSERT INTO Invitations (event_id, user_id, invitation_status, invitation_role) VALUES (?, ?, 'pending', ?)";
 
 	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -74,7 +79,7 @@ public class InvitationRepository {
 	        e.printStackTrace();
 	    }
 	}
-	public static void acceptInvitation(String user_id, String event_id) {
+	public void acceptInvitation(String user_id, String event_id) {
 		String query = "UPDATE Invitation SET invitation_status = 'accepted' WHERE user_id = ? AND event_id = ?";
 
 	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {

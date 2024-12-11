@@ -1,4 +1,4 @@
-package repositories;
+package dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,11 +10,16 @@ import java.util.List;
 import factories.UserFactory;
 import models.Product;
 import models.User;
-import singletons.DatabaseConnection;
+import utils.DatabaseConnection;
 
-public class ProductRepository {
-	private static Connection connection = DatabaseConnection.connect();
-	public static void addProduct(String product_name, String product_description, String vendor_id) {
+public class ProductDAO {
+	private Connection connection;
+	
+	public ProductDAO() {
+		this.connection = DatabaseConnection.connect();
+	}
+	
+	public void addProduct(String product_name, String product_description, String vendor_id) {
 		String query = "INSERT INTO Products (product_name, product_description, vendor_id) VALUES (?, ?, ?)";
 
 	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {

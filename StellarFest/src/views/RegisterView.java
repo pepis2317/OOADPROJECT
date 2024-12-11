@@ -10,65 +10,101 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-public class RegisterView {
-	private final Stage primaryStage;
-
-    public RegisterView(Stage stage) {
-        this.primaryStage = stage;
+import models.User;
+import utils.Response;
+import utils.Route;
+public class RegisterView extends View {
+	private BorderPane borderPane;
+	private VBox vbox;
+	private Label emailLabel, usernameLabel, passwordLabel, roleLabel;
+	private TextField emailField, usernameField, passwordField;
+	private ComboBox<String> roleComboBox;
+	private Button registerBtn, loginBtn;
+	private HashMap<String, String> roleMap;
+	private UserController userController;
+	
+    public RegisterView() {
+    	super();
+    	init();
+        layout();
+        style();
+        setEventHandler();
     }
 
-    public void show() {
-        VBox layout = new VBox();
-        layout.setStyle("-fx-padding: 20; -fx-alignment: center;");
-        Label emailLabel = new Label("Email:");
-        TextField emailField = new TextField();
+    
+    @Override
+    protected void init() {
+    	borderPane = new BorderPane();
+    	this.scene = new Scene(borderPane, 600, 400);
+    	
+    	vbox = new VBox(20);
+    	
+    	emailLabel = new Label("Email:");
+        emailField = new TextField();
         
-        Label usernameLabel = new Label("Username:");
-        TextField usernameField = new TextField();
-
-        Label passwordLabel = new Label("Password:");
-        PasswordField passwordField = new PasswordField();
-
-        Label roleLabel = new Label("Select Role:");
-        ComboBox<String> roleComboBox = new ComboBox<>();
-        roleComboBox.getItems().addAll("Admin", "Vendor", "Guest", "Event Organizer"); // Add roles here
-        roleComboBox.setPromptText("Choose your role");
-
-        Button registerButton = new Button("Register");
-        Button goToLoginButton = new Button("Back to Login");
-
-        registerButton.setOnAction(e -> handleRegister(
-        		emailField.getText(),
-                usernameField.getText(),
-                passwordField.getText(),
-                roleComboBox.getValue()
-            ));
-        goToLoginButton.setOnAction(e -> new LoginView(primaryStage).show());
-
-        layout.getChildren().addAll(
-                usernameLabel, usernameField,
-                emailLabel, emailField,
-                passwordLabel, passwordField,
-                roleLabel, roleComboBox,
-                registerButton, goToLoginButton
-            );
-
-        Scene registerScene = new Scene(layout, 300, 300);
-        primaryStage.setScene(registerScene);
-    }
-
-    private void handleRegister(String email, String username, String password, String role) {
-    	HashMap<String, String> map = new HashMap<>();
-    	map.put("Admin", "admin");
-    	map.put("Vendor", "vendor");
-    	map.put("Guest", "guest");
-    	map.put("Event Organizer", "eventorganizer");
-    	String selectedRole = map.get(role);
-    	if(UserController.checkRegisterInput(email, username, password)) {
-    		UserController.register(email, selectedRole, password, role);
+        usernameLabel = new Label("Username:");
+        usernameField = new TextField();
+        passwordLabel = new Label("Password:");
+        passwordField = new PasswordField();
+        roleLabel = new Label("Select Role:");
+        roleComboBox = new ComboBox<>();
+        registerBtn = new Button("Register");
+        loginBtn = new Button("Login");
+        
+        roleMap = new HashMap<>();
+        
+        userController = new UserController();
+	}
+	
+    @Override
+    protected void layout() {
+		roleComboBox.getItems().addAll("Admin", "Vendor", "Guest", "Event Organizer");
+        
+        roleMap.put("Admin", "admin");
+    	roleMap.put("Vendor", "vendor");
+    	roleMap.put("Guest", "guest");
+    	roleMap.put("Event Organizer", "eventorganizer");
+    	
+		vbox.getChildren().addAll(emailLabel, emailField, usernameLabel, usernameField, passwordLabel, 
+				passwordField, roleLabel, roleComboBox, registerBtn, loginBtn);
+		
+		borderPane.setCenter(vbox);
+	}
+	
+    @Override
+    protected void style() {
+		vbox.setSpacing(10);
+		vbox.setStyle("-fx-padding: 20; -fx-alignment: center;");
+	}
+	
+    @Override
+    protected void setEventHandler() {
+		registerBtn.setOnAction((e) -> {
+			register(emailField.getText(), usernameField.getText(), passwordField.getText(), roleComboBox.getValue());
+		});
+		
+		loginBtn.setOnAction((e) -> {
+			Route route = Route.getInstance();
+			route.redirect("login");
+		});
+	}
+    
+    private void register(String email, String username, String password, String role) {
+    	String selectedRole = roleMap.get(role);
+    	
+    	if(selectedRole == null) {
+    		showAlert(Alert.AlertType.ERROR, "Error", "No role selected!");
+    		
+    		return;
     	}
-        new LoginView(primaryStage).show();
+    		
+    	Response response = userController.register(email, username, password, selectedRole);
+    	
+    	if(!response.isSuccessful()) {
+    		showAlert(Alert.AlertType.ERROR, "Error", response.getMessage());
+    	}
     }
 }
