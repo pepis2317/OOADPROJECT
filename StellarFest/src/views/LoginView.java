@@ -1,60 +1,92 @@
 package views;
 
 
+import controllers.UserController;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import models.User;
+import utils.Response;
+import utils.Route;
 
-public class LoginView  {
-	private final Stage primaryStage;
-	public LoginView(Stage stage) {
-        this.primaryStage = stage;
+public class LoginView extends View {
+	private BorderPane borderPane;
+	private VBox vbox;
+	private Label emailLabel, passwordLabel;
+	private TextField emailField;
+	private PasswordField passwordField;
+	private Button loginBtn;
+	public Button registerBtn;
+	private UserController userController;
+	
+	public LoginView() {
+		super();
+        init();
+        layout();
+        style();
+        setEventHandler();
     }
+	
+	@Override
+	protected void init() {
+		borderPane = new BorderPane();
+		this.scene = new Scene(borderPane, 600, 300);
+		vbox = new VBox(20);
+		
+        emailLabel = new Label("Email:");
+        emailField = new TextField();
 
-    public void show() {
-        VBox layout = new VBox(10);
-        layout.setStyle("-fx-padding: 20; -fx-alignment: center;");
+        passwordLabel = new Label("Password:");
+        passwordField = new PasswordField();
 
-        Label usernameLabel = new Label("Username:");
-        TextField usernameField = new TextField();
+        loginBtn = new Button("Login");
+        registerBtn = new Button("Register");
+        
+        userController = new UserController();
+	}
+	
+	@Override
+	protected void layout() {
+		vbox.getChildren().addAll(emailLabel, emailField, passwordLabel, passwordField, loginBtn, registerBtn);
+		
+		borderPane.setCenter(vbox);
+	}
+	
+	@Override
+	protected void style() {
+		vbox.setSpacing(10);
+		vbox.setStyle("-fx-padding: 20; -fx-alignment: center;");
+	}
+	
+	@Override
+	protected void setEventHandler() {
+		 loginBtn.setOnAction((e) -> {
+			 login(emailField.getText(), passwordField.getText());
+		 });
+		 
+		 registerBtn.setOnAction((e) -> {
+			 Route route = Route.getInstance();
+			 route.redirect("register");
+		 });
+	}
 
-        Label passwordLabel = new Label("Password:");
-        PasswordField passwordField = new PasswordField();
-
-        Button loginButton = new Button("Login");
-        Button goToRegisterButton = new Button("Go to Register");
-
-        loginButton.setOnAction(e -> handleLogin(usernameField.getText(), passwordField.getText()));
-        goToRegisterButton.setOnAction(e -> new RegisterView(primaryStage).show());
-
-        layout.getChildren().addAll(
-            usernameLabel, usernameField,
-            passwordLabel, passwordField,
-            loginButton, goToRegisterButton
-        );
-
-        Scene loginScene = new Scene(layout, 300, 200);
-        primaryStage.setScene(loginScene);
-    }
-
-    private void handleLogin(String username, String password) {
-        if ("user".equals(username) && "password".equals(password)) {
-            showAlert("Login Successful", "Welcome, " + username + "!");
-        } else {
-            showAlert("Login Failed", "Invalid username or password.");
+    private void login(String email, String password) {
+        Response response = userController.login(email, password);
+        
+        if(response.isSuccessful()) {
+        	showAlert(Alert.AlertType.CONFIRMATION, "Success", response.getMessage());
         }
-    }
-
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        
+        if(!response.isSuccessful()) {
+        	showAlert(Alert.AlertType.ERROR, "Error", response.getMessage());
+        }
     }
 }
