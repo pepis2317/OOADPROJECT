@@ -28,7 +28,7 @@ public class VendorController {
 		UserSession session = UserSession.getInstance();
 		User user = session.getUser();
 		if(user != null) {
-			invitationDAO.acceptInvitation(user.getUser_id(), event_id);
+			invitationDAO.respondInvitation(user.getUser_id(), event_id, "accepted");
 		}
 	}
 	public List<Event> viewAcceptedEvents(String user_email){
@@ -45,6 +45,17 @@ public class VendorController {
 	public void manageVendor(String product_description, String product_name){
 		UserSession session = UserSession.getInstance();
 		User user = session.getUser();
+		if(product_description.isBlank() || product_name.isBlank()) {
+			return;
+		}
+		if(product_description.length() > 200) {
+			return;
+		}
 		productDAO.addProduct(product_name, product_description, user.getUser_id());
+	}
+	public List<Product> viewProducts(){
+		UserSession session = UserSession.getInstance();
+		User user = session.getUser();
+		return productDAO.getProducts(user.getUser_id());
 	}
 }

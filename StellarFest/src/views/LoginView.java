@@ -17,6 +17,7 @@ import models.User;
 import utils.Response;
 import utils.Route;
 
+
 public class LoginView extends View {
 	private BorderPane borderPane;
 	private VBox vbox;
@@ -24,7 +25,7 @@ public class LoginView extends View {
 	private TextField emailField;
 	private PasswordField passwordField;
 	private Button loginBtn;
-	public Button registerBtn;
+	private Button registerBtn;
 	private UserController userController;
 	
 	public LoginView() {
@@ -47,6 +48,7 @@ public class LoginView extends View {
         passwordLabel = new Label("Password:");
         passwordField = new PasswordField();
 
+
         loginBtn = new Button("Login");
         registerBtn = new Button("Register");
         
@@ -56,7 +58,6 @@ public class LoginView extends View {
 	@Override
 	protected void layout() {
 		vbox.getChildren().addAll(emailLabel, emailField, passwordLabel, passwordField, loginBtn, registerBtn);
-		
 		borderPane.setCenter(vbox);
 	}
 	
@@ -84,6 +85,7 @@ public class LoginView extends View {
         if(response.isSuccessful()) {
         	showAlert(Alert.AlertType.CONFIRMATION, "Success", response.getMessage());
         }
+
         
         if(!response.isSuccessful()) {
         	showAlert(Alert.AlertType.ERROR, "Error", response.getMessage());

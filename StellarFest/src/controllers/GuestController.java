@@ -24,7 +24,7 @@ public class GuestController {
 		UserSession session = UserSession.getInstance();
 		User user = session.getUser();
 		if(user!=null) {
-			invitationDAO.acceptInvitation(user.getUser_id(), event_id);
+			invitationDAO.respondInvitation(user.getUser_id(), event_id, "accepted");
 		}
 	}
 	public List<Event> viewAcceptedEvents(String user_email){

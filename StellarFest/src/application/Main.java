@@ -1,12 +1,16 @@
 package application;
 	
+
+
+import controllers.UserController;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.stage.Stage;
 import utils.Route;
+import views.AdminEventsView;
+
 import views.LoginView;
-import views.RegisterView;
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
 
 
 public class Main extends Application {
@@ -26,8 +30,8 @@ public class Main extends Application {
 		init();
 		route.redirect("login");
 	}
-	
 	public static void main(String[] args) {
 		launch(args);
 	}
+
 }
