@@ -120,7 +120,7 @@ public class UserDAO {
 	    return false;
 	}
 	
-	public void changeProfile(String user_id, String user_email, String user_name, String user_password) {
+	public boolean updateProfile(String user_id, String user_email, String user_name, String user_password) {
 	    String query = "UPDATE Users SET user_email = ?, user_name = ?, user_password = ? WHERE user_id = ?";
 
 	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -131,16 +131,15 @@ public class UserDAO {
 
 	        int rowsUpdated = preparedStatement.executeUpdate();
 
-	        if (rowsUpdated > 0) {
-	            System.out.println("Profile updated successfully!");
-	        } else {
-	            System.out.println("No user found with the given id.");
-	        }
+	        return rowsUpdated > 0;
 	    } catch (SQLException e) {
 	        System.err.println("Error updating profile: " + e.getMessage());
 	        e.printStackTrace();
 	    }
+	    
+	    return false;
 	}
+	
 	public List<Vendor> getVendors(String event_id) {
 	    List<Vendor> vendors = new ArrayList<>();
 	    String query = "SELECT Users.user_id, Users.user_email, Users.user_name, Users.user_password, Users.user_role "
@@ -161,7 +160,6 @@ public class UserDAO {
 	                String role = resultSet.getString("user_role");
 	                User user = UserFactory.create(id, email, name, password, role);
 	                
-	                // Ensure the user is castable to Vendor before adding
 	                if (user instanceof Vendor) {
 	                    vendors.add((Vendor) user);
 	                } else {

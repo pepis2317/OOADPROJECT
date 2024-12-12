@@ -1,13 +1,8 @@
 package application;
 	
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.stage.Stage;
 import utils.Route;
-import views.LoginView;
-import views.RegisterView;
-
 
 public class Main extends Application {
 	private Stage primaryStage;
@@ -24,6 +19,7 @@ public class Main extends Application {
 		
 		this.primaryStage = primaryStage;
 		init();
+
 		route.redirect("login");
 	}
 	
