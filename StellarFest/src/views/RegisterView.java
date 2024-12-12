@@ -3,6 +3,7 @@ package views;
 import java.util.HashMap;
 
 import controllers.UserController;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -11,13 +12,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import models.User;
 import utils.Response;
 import utils.Route;
+
 public class RegisterView extends View {
 	private BorderPane borderPane;
+	private GridPane gridPane;
 	private VBox vbox;
 	private Label emailLabel, usernameLabel, passwordLabel, roleLabel;
 	private TextField emailField, usernameField, passwordField;
@@ -28,18 +30,15 @@ public class RegisterView extends View {
 	
     public RegisterView() {
     	super();
-    	init();
-        layout();
-        style();
-        setEventHandler();
     }
     
     @Override
     protected void init() {
     	borderPane = new BorderPane();
-    	this.scene = new Scene(borderPane, 600, 400);
+    	this.scene = new Scene(borderPane, 400, 300);
     	
-    	vbox = new VBox(20);
+    	gridPane = new GridPane();
+    	vbox = new VBox();
     	
     	emailLabel = new Label("Email:");
         emailField = new TextField();
@@ -71,20 +70,41 @@ public class RegisterView extends View {
     	roleMap.put("Guest", "guest");
     	roleMap.put("Event Organizer", "eventorganizer");
     	
-		vbox.getChildren().addAll(emailLabel, emailField, usernameLabel, usernameField, passwordLabel, 
-				passwordField, roleLabel, roleComboBox, registerBtn, loginBtn);
+    	gridPane.add(emailLabel, 0, 0);
+    	gridPane.add(emailField, 1, 0);
+    	gridPane.add(usernameLabel, 0, 1);
+    	gridPane.add(usernameField, 1, 1);
+    	gridPane.add(passwordLabel, 0, 2);
+    	gridPane.add(passwordField, 1, 2);
+    	gridPane.add(roleLabel, 0, 3);
+    	gridPane.add(roleComboBox, 1, 3);
+    	
+		vbox.getChildren().addAll(gridPane, registerBtn, loginBtn);
 		
 		borderPane.setCenter(vbox);
 	}
 	
     @Override
     protected void style() {
-		vbox.setSpacing(10);
+    	gridPane.setAlignment(Pos.CENTER);
+    	gridPane.setVgap(10);
+    	gridPane.setHgap(10);
+    	
+		vbox.setSpacing(20);
 		vbox.setStyle("-fx-padding: 20; -fx-alignment: center;");
 	}
-	
+    
     @Override
-    protected void setEventHandler() {
+	public void load() {
+    	emailField.clear();
+    	usernameField.clear();
+    	passwordField.clear();
+    	roleComboBox.valueProperty().set(null);
+    	
+		setEventHandler();
+	}
+	
+    private void setEventHandler() {
 		registerBtn.setOnAction((e) -> {
 			register(emailField.getText(), usernameField.getText(), passwordField.getText(), roleComboBox.getValue());
 		});
@@ -97,16 +117,13 @@ public class RegisterView extends View {
 
     private void register(String email, String username, String password, String role) {
     	String selectedRole = roleMap.get(role);
-    	
-    	if(selectedRole == null) {
-    		showAlert(Alert.AlertType.ERROR, "Error", "No role selected!");
-    		
-    		return;
-    	}
     		
     	Response response = userController.register(email, username, password, selectedRole);
     	
-    	if(!response.isSuccessful()) {
+    	if(response.isSuccessful()) {
+    		showAlert(Alert.AlertType.INFORMATION, "Success", response.getMessage());
+    	}
+    	else {
     		showAlert(Alert.AlertType.ERROR, "Error", response.getMessage());
     	}
     }
