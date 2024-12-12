@@ -74,6 +74,9 @@ public class LoginView extends View {
 	
 	@Override
 	public void load() {
+		emailField.clear();
+		passwordField.clear();
+		
 		setEventHandler();
 	}
 	

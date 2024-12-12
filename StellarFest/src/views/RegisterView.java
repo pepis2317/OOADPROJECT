@@ -96,6 +96,11 @@ public class RegisterView extends View {
     
     @Override
 	public void load() {
+    	emailField.clear();
+    	usernameField.clear();
+    	passwordField.clear();
+    	roleComboBox.valueProperty().set(null);
+    	
 		setEventHandler();
 	}
 	
@@ -115,7 +120,10 @@ public class RegisterView extends View {
     		
     	Response response = userController.register(email, username, password, selectedRole);
     	
-    	if(!response.isSuccessful()) {
+    	if(response.isSuccessful()) {
+    		showAlert(Alert.AlertType.INFORMATION, "Success", response.getMessage());
+    	}
+    	else {
     		showAlert(Alert.AlertType.ERROR, "Error", response.getMessage());
     	}
     }
