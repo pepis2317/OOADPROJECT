@@ -90,6 +90,8 @@ public class ChangeProfileView extends View {
     	
     	emailField.setText(user.getUser_email());
     	usernameField.setText(user.getUser_name());
+    	oldPasswordField.clear();
+    	newPasswordField.clear();
     	
 		setEventHandler();
 	}
@@ -110,7 +112,10 @@ public class ChangeProfileView extends View {
     	List<Response> responses = userController.changeProfile(email, username, oldPassword, newPassword);
     	
     	for(Response response : responses) {
-    		if(!response.isSuccessful()) {
+    		if(response.isSuccessful()) {
+    			showAlert(Alert.AlertType.INFORMATION, "Success", response.getMessage());
+    		}
+    		else {
     			showAlert(Alert.AlertType.ERROR, "Error", response.getMessage());
     		}
     	}
