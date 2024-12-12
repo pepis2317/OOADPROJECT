@@ -1,7 +1,5 @@
 package controllers;
 
-import javax.management.relation.Role;
-
 import dao.UserDAO;
 import models.User;
 import utils.Response;
@@ -14,7 +12,7 @@ public class UserController {
 	
 	public UserController() {
 		this.userDAO = new UserDAO();
-		this.route = new Route();
+		this.route = Route.getInstance();
 	}
 	
 	public Response login(String email, String password) {
@@ -68,4 +66,5 @@ public class UserController {
 		
 		return inputCheckResponse;
 	}
+	
 }

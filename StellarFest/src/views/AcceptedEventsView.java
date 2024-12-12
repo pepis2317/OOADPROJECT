@@ -2,8 +2,7 @@ package views;
 
 import java.util.ArrayList;
 
-import controllers.AdminController;
-import controllers.UserController;
+import controllers.EventController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
@@ -14,18 +13,24 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import javafx.util.Callback;
 import models.Event;
 import models.User;
+import utils.Route;
 
-public class AcceptedEventsView extends TopMenuBar{
-	private final Stage primaryStage;
-	private Scene scene;
-	private User user;
+public class AcceptedEventsView extends View{
+	private Route route;
+	private MenuBar menuBar;
+	private VBox vbox;
+	private TableView<Event> tableView;
+	private EventController eventController;
 
-    public AcceptedEventsView(Stage stage) {
-    	this.primaryStage = stage;
+    public AcceptedEventsView() {
+    	super();
+		init();
+		layout();
+		style();
+		setEventHandler();
     }
     public TableView<Event> initializeTableView(ObservableList<Event> events){
     	TableView<Event> tableView = new TableView<>(events);
@@ -45,7 +50,7 @@ public class AcceptedEventsView extends TopMenuBar{
                     {
                         button.setOnAction(event -> {
                             Event selectedEvent = getTableView().getItems().get(getIndex());
-                            new EventDetailView(primaryStage, selectedEvent).show();
+//                            route.redirect("");
                         });
                     }
 
@@ -78,22 +83,32 @@ public class AcceptedEventsView extends TopMenuBar{
 
         return tableView;
     }
-	public void show() {
-		VBox vbox = new VBox();
-        scene = new Scene(vbox);
-        
-		ArrayList<Event> eventsList = (ArrayList<Event>) UserController.viewAcceptedEvents(user.getUser_email());
+	@Override
+	protected void init() {
+		// TODO Auto-generated method stub
+		vbox = new VBox();
+		this.scene = new Scene(vbox);
+		eventController = new EventController();
+		ArrayList<Event> eventsList = (ArrayList<Event>) eventController.viewAcceptedEvents();
 		ObservableList<Event> events = FXCollections.observableArrayList(eventsList);
-        TableView<Event> tableView = initializeTableView(events);
-        MenuBar menuBar = initializeMenuBar(primaryStage);
-		Button viewUsersButton = new Button ("View All Users");
+		tableView = initializeTableView(events);
+		TopMenuBar topMenuBar = new TopMenuBar();
+		menuBar = topMenuBar.initializeMenuBar();
+	}
+	@Override
+	protected void layout() {
+		// TODO Auto-generated method stub
 		vbox.getChildren().addAll(menuBar, tableView);
-
-        viewUsersButton.setOnAction(e->{
-        	new AdminAllUsersView(primaryStage).show();
-        });
-        primaryStage.setScene(scene);
-        primaryStage.show();
+		
+	}
+	@Override
+	protected void style() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	protected void setEventHandler() {
+		// TODO Auto-generated method stub
 		
 	}
 

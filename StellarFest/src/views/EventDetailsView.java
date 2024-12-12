@@ -15,42 +15,29 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import javafx.util.Callback;
 import models.Event;
 import models.Guest;
 import models.User;
 import models.Vendor;
-import singletons.UserSession;
+import utils.UserSession;
 
-public class EventDetailView  extends TopMenuBar{
-	private final Stage primaryStage;
-	private Scene scene;
-	private Event event;
+public class EventDetailsView extends View{
 	private User user;
-
-    public EventDetailView(Stage stage, Event event) {
-    	this.primaryStage = stage;
-    	this.event = event;
-    	UserSession session = UserSession.getInstance();
-    	user = session.getUser();
-    }
-    public VBox initializeInfo() {
-    	VBox vbox = new VBox();
-    	Label idLabel = new Label(event.getEvent_id());
-        Label nameLabel = new Label(event.getEvent_name());
-        Label dateLabel = new Label(event.getEvent_date());
-        Label locationLabel = new Label(event.getEvent_location());
-        Label descriptionLabel = new Label(event.getEvent_description());
-        Label organizerLabel = new Label(event.getOrganizer_id());
-        vbox.getChildren().add(idLabel);
-		vbox.getChildren().add(nameLabel);
-		vbox.getChildren().add(dateLabel);
-		vbox.getChildren().add(locationLabel);
-		vbox.getChildren().add(descriptionLabel);
-		vbox.getChildren().add(organizerLabel);
-		return vbox;
-        
+	private AdminController adminController;
+	private Event event;
+	private VBox info;
+	private VBox vbox;
+	private MenuBar menuBar;
+	private HBox tables;
+	private TableView<User> guestsTableView;
+	private TableView<User> vendorsTableView;
+    public EventDetailsView() {
+    	super();
+		init();
+		layout();
+		style();
+		setEventHandler();
     }
     public TableView<User> initializeTableView(ObservableList<User> users){
     	TableView<User> tableView = new TableView<>(users);
@@ -70,7 +57,7 @@ public class EventDetailView  extends TopMenuBar{
                         {
                             button.setOnAction(event -> {
                             	User selectedUser = getTableView().getItems().get(getIndex());
-                                AdminController.deleteUser(selectedUser.getUser_id());
+                                adminController.deleteUser(selectedUser.getUser_id());
                                 getTableView().getItems().remove(getIndex());
                             });
                         }
@@ -96,8 +83,6 @@ public class EventDetailView  extends TopMenuBar{
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("user_name"));
         passwordColumn.setCellValueFactory(new PropertyValueFactory<>("user_password"));
         roleColumn.setCellValueFactory(new PropertyValueFactory<>("user_role"));
-        
-        // Add columns to TableView
         tableView.getColumns().add(idColumn);
         tableView.getColumns().add(emailColumn);
         tableView.getColumns().add(nameColumn);
@@ -106,31 +91,62 @@ public class EventDetailView  extends TopMenuBar{
         
         return tableView;
     }
-    public void show() {
-		VBox vbox = new VBox();
-        scene = new Scene(vbox);
+    public VBox initializeInfo() {
+    	VBox vbox = new VBox();
+    	Label idLabel = new Label(event.getEvent_id());
+        Label nameLabel = new Label(event.getEvent_name());
+        Label dateLabel = new Label(event.getEvent_date());
+        Label locationLabel = new Label(event.getEvent_location());
+        Label descriptionLabel = new Label(event.getEvent_description());
+        Label organizerLabel = new Label(event.getOrganizer_id());
+        vbox.getChildren().add(idLabel);
+		vbox.getChildren().add(nameLabel);
+		vbox.getChildren().add(dateLabel);
+		vbox.getChildren().add(locationLabel);
+		vbox.getChildren().add(descriptionLabel);
+		vbox.getChildren().add(organizerLabel);
+		return vbox;
+        
+    }
 
-        List<Guest> guestsList = AdminController.getGuestsByTransactionID(event.getEvent_id());
+	public HBox initializeTables() {
+		List<Guest> guestsList = adminController.getGuestsByTransactionID(event.getEvent_id());
 		ObservableList<User> guests = FXCollections.observableArrayList(guestsList);
-		List<Vendor> vendorsList = AdminController.getVendorsByTransactionID(event.getEvent_id());
+		List<Vendor> vendorsList = adminController.getVendorsByTransactionID(event.getEvent_id());
 		ObservableList<User> vendors = FXCollections.observableArrayList(vendorsList);
-
-        TableView<User> guestsTableView = initializeTableView(guests);
-        TableView<User> vendorsTableView = initializeTableView(vendors);
+        guestsTableView = initializeTableView(guests);
+        vendorsTableView = initializeTableView(vendors);
         HBox tables = new HBox();
         tables.getChildren().add(guestsTableView);
         tables.getChildren().add(vendorsTableView);
-        VBox eventInfo = initializeInfo();
-        eventInfo.setStyle("-fx-padding: 20; ");
-        MenuBar menuBar = initializeMenuBar(primaryStage);
+        return tables;
+	}
+	@Override
+	protected void init() {
+		adminController = new AdminController();
+		UserSession session = UserSession.getInstance();
+    	user = session.getUser();
+		event = null;//blm buat passing params di routing
+		vbox = new VBox();
+		this.scene = new Scene(vbox);
+		info = initializeInfo();
+		TopMenuBar topMenu = new TopMenuBar();
+		menuBar = topMenu.initializeMenuBar();
 		
-		vbox.getChildren().add(menuBar);
-		vbox.getChildren().add(eventInfo);
+		tables = initializeTables();
 		
-		vbox.getChildren().add(tables);
-
-        primaryStage.setScene(scene);
-        primaryStage.show();
+	}
+	@Override
+	protected void layout() {
+		vbox.getChildren().addAll(menuBar, info, tables);
+	}
+	@Override
+	protected void style() {
+		info.setStyle("-fx-padding: 20; ");
+	}
+	@Override
+	protected void setEventHandler() {
+		// TODO Auto-generated method stub
 		
 	}
 }

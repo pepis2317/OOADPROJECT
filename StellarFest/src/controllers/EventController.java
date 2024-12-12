@@ -7,6 +7,8 @@ import java.util.List;
 
 import dao.EventDAO;
 import models.Event;
+import models.User;
+import utils.UserSession;
 
 public class EventController {
 	private EventDAO eventDAO;
@@ -40,5 +42,13 @@ public class EventController {
 			return null;
 		}
 		return eventDAO.getEventById(event_id);
+	}
+	public List<Event> viewAcceptedEvents(){
+		UserSession session = UserSession.getInstance();
+		User user = session.getUser();
+		if(user!=null) {
+			return eventDAO.getAcceptedEvents(user.getUser_id());
+		}
+		return null;
 	}
 }

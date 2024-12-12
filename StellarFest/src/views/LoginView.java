@@ -25,7 +25,7 @@ public class LoginView extends View {
 	private TextField emailField;
 	private PasswordField passwordField;
 	private Button loginBtn;
-	public Button registerBtn;
+	private Button registerBtn;
 	private UserController userController;
 	
 	public LoginView() {
@@ -58,7 +58,6 @@ public class LoginView extends View {
 	@Override
 	protected void layout() {
 		vbox.getChildren().addAll(emailLabel, emailField, passwordLabel, passwordField, loginBtn, registerBtn);
-		
 		borderPane.setCenter(vbox);
 	}
 	

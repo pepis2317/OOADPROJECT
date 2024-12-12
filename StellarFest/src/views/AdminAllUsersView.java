@@ -26,14 +26,21 @@ import models.EventOrganizer;
 import models.Guest;
 import models.User;
 import models.Vendor;
+import utils.Route;
 
-public class AdminAllUsersView extends TopMenuBar {
-	private final Stage primaryStage;
-	private Scene AdminScene;
-
-    public AdminAllUsersView(Stage stage) {
-    	this.primaryStage = stage;
-    }
+public class AdminAllUsersView extends View {
+	private AdminController adminController;
+	private MenuBar menuBar;
+	private VBox vbox;
+	private TableView<User> tableView;
+	private Route route;
+	public AdminAllUsersView() {
+		super();
+		init();
+		layout();
+		style();
+		setEventHandler();
+	}
     public TableView<User> initializeTableView(ObservableList<User> users){
     	TableView<User> tableView = new TableView<>(users);
         TableColumn<User, String> idColumn = new TableColumn<>("Id");
@@ -50,7 +57,7 @@ public class AdminAllUsersView extends TopMenuBar {
                     {
                         button.setOnAction(event -> {
                             User selectedUser = getTableView().getItems().get(getIndex());
-                            AdminController.deleteUser(selectedUser.getUser_id());
+                            adminController.deleteUser(selectedUser.getUser_id());
                             getTableView().getItems().remove(getIndex());
                         });
                     }
@@ -83,21 +90,31 @@ public class AdminAllUsersView extends TopMenuBar {
         tableView.getColumns().add(deleteColumn);
         return tableView;
     }
-	public void show() {
-		VBox vbox = new VBox();
-        AdminScene = new Scene(vbox);
-        
-		ArrayList<User> usersList = (ArrayList<User>) AdminController.getAllUsers();
+	@Override
+	protected void init() {
+		// TODO Auto-generated method stub
+		adminController = new AdminController();
+		vbox = new VBox();
+		this.scene = new Scene(vbox);
+		ArrayList<User> usersList = (ArrayList<User>) adminController.getAllUsers();
 		ObservableList<User> users = FXCollections.observableArrayList(usersList);
-        TableView<User> tableView = initializeTableView(users);
-        
-        MenuBar menuBar = initializeMenuBar(primaryStage);
+		tableView = initializeTableView(users);
+		TopMenuBar topMenu = new TopMenuBar();
+		menuBar = topMenu.initializeMenuBar();
+	}
+	@Override
+	protected void layout() {
+		// TODO Auto-generated method stub
+		vbox.getChildren().addAll(menuBar, tableView);
+	}
+	@Override
+	protected void style() {
+		// TODO Auto-generated method stub
 		
-		vbox.getChildren().add(menuBar);
-		vbox.getChildren().add(tableView);
-
-        primaryStage.setScene(AdminScene);
-        primaryStage.show();
+	}
+	@Override
+	protected void setEventHandler() {
+		// TODO Auto-generated method stub
 		
 	}
 
