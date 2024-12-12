@@ -1,6 +1,8 @@
 package utils;
 
 public class Response {
+//	Class that stores success flag and message, used for responses from controller to view
+	
 	private boolean isSuccessful;
 	private String message;
 
