@@ -2,28 +2,38 @@ package controllers;
 
 import java.util.List;
 
+import dao.EventDAO;
+import dao.InvitationDAO;
+import dao.UserDAO;
 import models.Event;
 import models.User;
-import repositories.EventRepository;
-import repositories.InvitationRepository;
-import repositories.UserRepository;
-import singletons.UserSession;
+import utils.UserSession;
 
 public class GuestController {
-	public static void acceptInvitation(String event_id) {
+	private EventDAO eventDAO;
+	private InvitationDAO invitationDAO;
+	private UserDAO userDAO;
+	
+	public GuestController() {
+		this.eventDAO = new EventDAO();
+		this.invitationDAO = new InvitationDAO();
+		this.userDAO = new UserDAO();
+	}
+	
+	public void acceptInvitation(String event_id) {
 		UserSession session = UserSession.getInstance();
 		User user = session.getUser();
 		if(user!=null) {
-			InvitationRepository.acceptInvitation(user.getUser_id(), event_id);
+			invitationDAO.respondInvitation(user.getUser_id(), event_id, "accepted");
 		}
 	}
-	public static List<Event> viewAcceptedEvents(String user_email){
+	public List<Event> viewAcceptedEvents(String user_email){
 		if(user_email.isEmpty()) {
 			return null;
 		}
-		User user = UserRepository.getUserByEmail(user_email);
+		User user = userDAO.getUserByEmail(user_email);
 		if(user!=null) {
-			return EventRepository.getAcceptedEvents(user.getUser_id());
+			return eventDAO.getAcceptedEvents(user.getUser_id());
 		}
 		return null;
 	}

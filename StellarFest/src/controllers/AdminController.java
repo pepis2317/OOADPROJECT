@@ -2,48 +2,70 @@ package controllers;
 
 import java.util.List;
 
+import dao.EventDAO;
+import dao.UserDAO;
 import models.Event;
 import models.Guest;
 import models.User;
 import models.Vendor;
-import repositories.EventRepository;
-import repositories.UserRepository;
+import utils.Response;
 
 public class AdminController {
-	//viewAllEvents sama viewEventDetails(event_id) mungkin lebih masuk akal kalo di views
-	public static List<Event> getAllEvents(){
-		return EventRepository.getEvents();
+	private EventDAO eventDAO;
+	private UserDAO userDAO;
+	
+	public AdminController() {
+		this.eventDAO = new EventDAO();
+		this.userDAO = new UserDAO();
 	}
-	public static List<User> getAllUsers(){
-		return UserRepository.getUsers();
+
+	public List<Event> getAllEvents(){
+		return eventDAO.getEvents();
 	}
-	public static Event getEvent(String event_id) {
+	public List<User> getAllUsers(){
+		return userDAO.getUsers();
+	}
+	public Event getEvent(String event_id) {
 		if(event_id.isBlank()) {
 			return null;
 		}
-		return EventRepository.getEventById(event_id);
+		return eventDAO.getEventById(event_id);
 	}
-	public static void deleteEvent(String event_id) {
+	public Response deleteEvent(String event_id) {
 		if(!event_id.isBlank()) {
-			EventRepository.deleteEvent(event_id);
+			if(eventDAO.deleteEvent(event_id)) {
+				return new Response(true, "Event deleted successfully.");
+			}
+			else {
+				return new Response(false, "Something went wrong!");
+			}
 		}
+		
+		return new Response(false, "Event not found!");
 	}
-	public static void deleteUser(String user_id) {
+	public Response deleteUser(String user_id) {
 		if(!user_id.isBlank()) {
-			UserRepository.deleteUser(user_id);
+			if(userDAO.deleteUser(user_id)) {
+				return new Response(true, "User deleted successfully.");
+			}
+			else {
+				return new Response(false, "Something went wrong!");
+			}
 		}
+		
+		return new Response(false, "User not found!");
 	}
-	public static List<Guest> getGuestsByTransactionID(String event_id){
+	public List<Guest> getGuestsByTransactionID(String event_id){
 		if(event_id.isBlank()) {
 			return null;
 		}
-		return UserRepository.getGuests(event_id);
+		return userDAO.getGuests(event_id);
 	}
-	public static List<Vendor> getVendorsByTransactionID(String event_id){
+	public List<Vendor> getVendorsByTransactionID(String event_id){
 		if(event_id.isBlank()) {
 			return null;
 		}
-		return UserRepository.getVendors(event_id);
+		return userDAO.getVendors(event_id);
 	}
 	
 }

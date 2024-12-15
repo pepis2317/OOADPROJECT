@@ -2,42 +2,51 @@ package controllers;
 
 import java.util.List;
 
+import dao.EventDAO;
+import dao.UserDAO;
 import models.Event;
 import models.Guest;
 import models.Vendor;
-import repositories.EventRepository;
-import repositories.UserRepository;
 
 public class EventOrganizerController {
-	//createEvent di EventController
-	//getOrganizedEventDetails di EventController, pake getEventDetails aj
-	//
-	public static List<Event> getOrganizedEvents(String user_id){
+	private EventDAO eventDAO;
+	private UserDAO userDAO;
+	
+	public EventOrganizerController() {
+		this.eventDAO = new EventDAO();
+		this.userDAO = new UserDAO();
+	}
+	
+	public List<Event> getOrganizedEvents(String user_id){
 		if(user_id.isBlank()) {
 			return null;
 		}
-		return EventRepository.getEventsByOrganizerId(user_id);
+		return eventDAO.getEventsByOrganizerId(user_id);
 	}
-	public static List<Guest> getGuests(){
-		return UserRepository.getAllGuests();
+	
+	public List<Guest> getGuests(){
+		return userDAO.getAllGuests();
 	}
-	public static List<Vendor> getVendors(){
-		return UserRepository.getAllVendors();
+	
+	public List<Vendor> getVendors(){
+		return userDAO.getAllVendors();
 	}
-	public static List<Guest> getGuestsByTransactionID(String event_id){
+	
+	public List<Guest> getGuestsByTransactionID(String event_id){
 		if(event_id.isBlank()) {
 			return null;
 		}
-		return UserRepository.getGuests(event_id);
+		return userDAO.getGuests(event_id);
 	}
-	public static List<Vendor> getVendorsByTransactionID(String event_id){
+	
+	public List<Vendor> getVendorsByTransactionID(String event_id){
 		if(event_id.isBlank()) {
 			return null;
 		}
-		return UserRepository.getVendors(event_id);
+		return userDAO.getVendors(event_id);
 	}
-	//checkAddVendorInput sama checkAddGuestInput buat apa :(
-	public static void editEventName(String event_id, String event_name) {
-		EventRepository.editEventName(event_id, event_name);
+
+	public void editEventName(String event_id, String event_name) {
+		eventDAO.editEventName(event_id, event_name);
 	}
 }
