@@ -15,7 +15,6 @@ import javafx.scene.layout.VBox;
 import utils.Response;
 import utils.Route;
 
-
 public class LoginView extends View {
 	private BorderPane borderPane;
 	private GridPane gridPane;
@@ -24,7 +23,7 @@ public class LoginView extends View {
 	private TextField emailField;
 	private PasswordField passwordField;
 	private Button loginBtn;
-	private Button registerBtn;
+	public Button registerBtn;
 	private UserController userController;
 	
 	public LoginView() {
@@ -45,7 +44,6 @@ public class LoginView extends View {
         passwordLabel = new Label("Password:");
         passwordField = new PasswordField();
 
-
         loginBtn = new Button("Login");
         registerBtn = new Button("Register");
         
@@ -54,7 +52,6 @@ public class LoginView extends View {
 	
 	@Override
 	protected void layout() {
-
 		gridPane.add(emailLabel, 0, 0);
 		gridPane.add(emailField, 1, 0);
 		gridPane.add(passwordLabel, 0, 1);
@@ -98,7 +95,7 @@ public class LoginView extends View {
         Response response = userController.login(email, password);
         
         if(!response.isSuccessful()) {
-        	showAlert(Alert.AlertType.ERROR, "Error", response.getMessage());
+        	showAlert(Alert.AlertType.ERROR, "Error in Logging In", response.getMessage());
         }
     }
 }

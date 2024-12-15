@@ -127,6 +127,13 @@ public class UserController {
 		UserSession session = UserSession.getInstance();
 		User user = session.getUser();
 		
+
+		if(user == null) {
+			route.redirect("login");
+			return null;
+		}
+		
+
 //		Get responses for each input check
 		List<Response> responses = checkChangeProfileInput(email, username, oldPassword, newPassword);
 		Response emailResponse = responses.get(0);
@@ -177,4 +184,37 @@ public class UserController {
 		
 		return responses;
 	}
+
+	
+	public void logout() {
+		UserSession session = UserSession.getInstance();
+		session.setUser(null);
+		
+		route.redirect("login");
+	}
+	
+	public User getUserByEmail(String email) {
+		if(email.isEmpty()) {
+			return null;
+		}
+		
+		return userDAO.getUserByEmail(email);
+	}
+	
+	public User getUserByUsername(String name) {
+		if(name.isEmpty()) {
+			return null;
+		}
+		
+		return userDAO.getUserByUsername(name);
+	}
+	
+	public User getUserById(String id) {
+		if(id.isEmpty()) {
+			return null;
+		}
+		
+		return userDAO.getUserById(id);
+	}
+
 }

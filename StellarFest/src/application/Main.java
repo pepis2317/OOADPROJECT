@@ -1,8 +1,5 @@
 package application;
 	
-
-
-import controllers.UserController;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import utils.Route;
@@ -26,8 +23,8 @@ public class Main extends Application {
 
 		route.redirect("login");
 	}
+	
 	public static void main(String[] args) {
 		launch(args);
 	}
-
 }

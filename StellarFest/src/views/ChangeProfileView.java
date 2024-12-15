@@ -8,6 +8,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -15,16 +17,19 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import models.User;
 import utils.Response;
-import utils.Route;
+
 import utils.UserSession;
 
 public class ChangeProfileView extends View {
 	private BorderPane borderPane;
 	private GridPane gridPane;
 	private VBox vbox;
+
+	private MenuBar menuBar;
 	private Label emailLabel, usernameLabel, oldPasswordLabel, newPasswordLabel;
 	private TextField emailField, usernameField, oldPasswordField, newPasswordField;
-	private Button changeProfileBtn, homeBtn;
+	private Button changeProfileBtn;
+
 	private UserController userController;
 	
     public ChangeProfileView() {
@@ -52,7 +57,7 @@ public class ChangeProfileView extends View {
         newPasswordField = new PasswordField();
         
         changeProfileBtn = new Button("Change Profile");
-        homeBtn = new Button("< Home");
+
         
         userController = new UserController();
 	}
@@ -67,8 +72,8 @@ public class ChangeProfileView extends View {
     	gridPane.add(oldPasswordField, 1, 2);
     	gridPane.add(newPasswordLabel, 0, 3);
     	gridPane.add(newPasswordField, 1, 3);
-    	    	
-		vbox.getChildren().addAll(gridPane, changeProfileBtn, homeBtn);
+
+		vbox.getChildren().addAll(gridPane, changeProfileBtn);
 		
 		borderPane.setCenter(vbox);
 	}
@@ -85,6 +90,13 @@ public class ChangeProfileView extends View {
     
     @Override
 	public void load() {
+
+    	TopMenuBar topMenu = new TopMenuBar();
+        menuBar = topMenu.initializeMenuBar();
+        
+        borderPane.setTop(menuBar);
+    	
+
     	UserSession session = new UserSession();
     	User user = session.getUser();
     	
@@ -101,11 +113,7 @@ public class ChangeProfileView extends View {
 			changeProfile(emailField.getText(), usernameField.getText(), 
 					oldPasswordField.getText(), newPasswordField.getText());
 		});
-		
-		homeBtn.setOnAction((e) -> {
-			Route route = Route.getInstance();
-			route.redirect("home");
-		});
+
 	}
 
     private void changeProfile(String email, String username, String oldPassword, String newPassword) {

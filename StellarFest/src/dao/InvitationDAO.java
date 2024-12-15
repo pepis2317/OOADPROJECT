@@ -83,8 +83,9 @@ public class InvitationDAO {
 		}
 		return invites;
 	}
-	public void createInvitation(String event_id, String user_id, String user_role) {
-		String query = "INSERT INTO Invitations (event_id, user_id, invitation_status, invitation_role) VALUES (?, ?, 'pending', ?)";
+	public boolean createInvitation(String event_id, String user_id, String user_role) {
+		String query = "INSERT INTO Invitations(event_id, user_id, invitation_status, invitation_role) "
+				+ "VALUES(?, ?, 'pending', ?)";
 
 	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 	        preparedStatement.setString(1, event_id);
@@ -93,16 +94,16 @@ public class InvitationDAO {
 
 	        int rowsInserted = preparedStatement.executeUpdate();
 
-	        if (rowsInserted > 0) {
-	            System.out.println("Event created successfully!");
-	        }
+	        return rowsInserted > 0;
 	    } catch (SQLException e) {
 	        System.err.println("Error creating invitation: " + e.getMessage());
 	        e.printStackTrace();
 	    }
+	    
+	    return false;
 	}
-	public void respondInvitation(String user_id, String event_id, String response) {
-		String query = "UPDATE Invitation SET invitation_status = ? WHERE user_id = ? AND event_id = ?";
+	public boolean respondInvitation(String user_id, String event_id, String response) {
+		String query = "UPDATE Invitations SET invitation_status = ? WHERE user_id = ? AND event_id = ?";
 
 	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 	        preparedStatement.setString(1, response);
@@ -111,15 +112,13 @@ public class InvitationDAO {
 
 	        int rowsUpdated = preparedStatement.executeUpdate();
 
-	        if (rowsUpdated > 0) {
-	            System.out.println("Profile updated successfully!");
-	        } else {
-	            System.out.println("No user found with the given id.");
-	        }
+	        return rowsUpdated > 0;
 	    } catch (SQLException e) {
 	        System.err.println("Error updating profile: " + e.getMessage());
 	        e.printStackTrace();
 	    }
+	    
+	    return false;
 	}
 	
 }

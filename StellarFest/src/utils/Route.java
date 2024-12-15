@@ -3,10 +3,18 @@ package utils;
 import java.util.HashMap;
 
 import javafx.stage.Stage;
+
+import views.AcceptedEventsView;
+import views.AdminAllUsersView;
+import views.AdminAllEventsView;
 import views.ChangeProfileView;
+import views.EventDetailsView;
 import views.HomeView;
 import views.LoginView;
-import views.ParameterView;
+import views.ManageProductsView;
+import views.IParameterView;
+import views.InvitationsView;
+
 import views.RegisterView;
 import views.TestView;
 import views.View;
@@ -17,8 +25,6 @@ public class Route {
 	private static Route instance;
 	private static Stage stage = null;
 	private static HashMap<String, View> routes = null;
-	
-	
 	
 	public static void createInstance(Stage primaryStage) {
 		instance = new Route();
@@ -40,40 +46,60 @@ public class Route {
 	}
 	
 	private void addRoutes() {
+//		Basic user routes
 		routes.put("login", new LoginView());
 		routes.put("register", new RegisterView());
 
 		routes.put("changeProfile", new ChangeProfileView());
 		routes.put("home", new HomeView());
-		routes.put("test", new TestView());
+		routes.put("eventDetails", new EventDetailsView());
+		
+//		Admin only routes
+		routes.put("adminAllUsers", new AdminAllUsersView());
+		routes.put("adminAllEvents", new AdminAllEventsView());
+		
+//		Vendor and Guest routes
+		routes.put("organizedEvents", null);
+		routes.put("acceptedEvents", new AcceptedEventsView());
+		routes.put("invitations", new InvitationsView());
+		
+//		Vendor only route
+		routes.put("manageProducts", new ManageProductsView());
+
 	}
 	
 	public void redirect(String key) {
 		View view = routes.get(key);
 		
 		if(view == null) {
+			System.out.println("Redirect unsuccessful");
 			return;
 		}
 		
 		view.load();
 		stage.setScene(view.getScene());
 		stage.show();
+		stage.centerOnScreen();
 	}
 	
 	public void redirect(String key, HashMap<String, Object> params) {
 		View view = routes.get(key);
 		
-		if(view == null || !(view instanceof ParameterView)) {
+		if(view == null || !(view instanceof IParameterView)) {
+			System.out.println("Redirect unsuccessful");
 			return;
 		}
 		
+
 //		Set params to view and load the view
-		ParameterView parameterView = (ParameterView)view;
+		IParameterView parameterView = (IParameterView)view;
+
 		parameterView.setParams(params);
 		
 		view.load();
 		stage.setScene(view.getScene());
 		stage.show();
+		stage.centerOnScreen();
 	}
 
 }
