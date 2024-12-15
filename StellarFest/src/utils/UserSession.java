@@ -3,6 +3,8 @@ package utils;
 import models.User;
 
 public class UserSession {
+//	Class used to store data of user that is logged in
+	
 	private static volatile UserSession instance;
 	private static User user = null;
 	
