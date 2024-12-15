@@ -118,10 +118,10 @@ public class RegisterView extends View {
     	Response response = userController.register(email, username, password, selectedRole);
     	
     	if(response.isSuccessful()) {
-    		showAlert(Alert.AlertType.INFORMATION, "Success", response.getMessage());
+    		showAlert(Alert.AlertType.INFORMATION, "Registered Successfully", response.getMessage());
     	}
     	else {
-    		showAlert(Alert.AlertType.ERROR, "Error", response.getMessage());
+    		showAlert(Alert.AlertType.ERROR, "Error in Registering", response.getMessage());
     	}
     }
 }

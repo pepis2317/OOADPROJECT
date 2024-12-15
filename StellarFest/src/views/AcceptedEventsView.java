@@ -1,8 +1,12 @@
 package views;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import controllers.EventController;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
@@ -11,35 +15,42 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import models.Event;
-import models.User;
 import utils.Route;
 
 public class AcceptedEventsView extends View{
 	private Route route;
+	private BorderPane borderPane;
 	private MenuBar menuBar;
 	private VBox vbox;
 	private TableView<Event> tableView;
-	private EventController eventController;
+	private SimpleDateFormat sdf;
+	private EventController eventController;	
+//	Guest and Vendor
 
     public AcceptedEventsView() {
     	super();
-		init();
-		layout();
-		style();
-		setEventHandler();
     }
     public TableView<Event> initializeTableView(ObservableList<Event> events){
-    	TableView<Event> tableView = new TableView<>(events);
-        TableColumn<Event, String> idColumn = new TableColumn<>("Id");
-        TableColumn<Event, String> nameColumn = new TableColumn<>("Name");
-        TableColumn<Event, String> dateColumn = new TableColumn<>("Date");
-        TableColumn<Event, String> locationColumn = new TableColumn<>("Location");
-        TableColumn<Event, String> descriptionColumn = new TableColumn<>("Description");
-        TableColumn<Event, String> organizerColumn = new TableColumn<>("Organizer");
+    	TableView<Event> tableView = new TableView<>();
+        
+        TableColumn<Event, String> nameColumn = new TableColumn<>("Event Name");
+        nameColumn.setCellValueFactory(new PropertyValueFactory<Event, String>("event_name"));
+        
+        TableColumn<Event, String> dateColumn = new TableColumn<>("Event Date");
+        dateColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Event,String>, ObservableValue<String>>() {
+			
+			@Override
+			public ObservableValue<String> call(CellDataFeatures<Event, String> param) {
+				return new SimpleStringProperty(sdf.format(param.getValue().getEvent_date()));
+			}
+		});
+        
         TableColumn<Event, Void> viewDetailsColumn = new TableColumn<>("View Details");
         viewDetailsColumn.setCellFactory(new Callback<>() {
             @Override
@@ -50,7 +61,9 @@ public class AcceptedEventsView extends View{
                     {
                         button.setOnAction(event -> {
                             Event selectedEvent = getTableView().getItems().get(getIndex());
-//                            route.redirect("");
+                            HashMap<String, Object> param = new HashMap<String, Object>();
+                            param.put("event_id", selectedEvent.getEvent_id());
+                            route.redirect("eventDetails", param);
                         });
                     }
 
@@ -65,41 +78,35 @@ public class AcceptedEventsView extends View{
                     }
                 };
             }
+            
         });
 
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("event_id"));
-        nameColumn.setCellValueFactory(new PropertyValueFactory<>("event_name"));
-        dateColumn.setCellValueFactory(new PropertyValueFactory<>("event_date"));
-        locationColumn.setCellValueFactory(new PropertyValueFactory<>("event_location"));
-        descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("event_description"));
-        organizerColumn.setCellValueFactory(new PropertyValueFactory<>("organizer_id"));
-        tableView.getColumns().add(idColumn);
         tableView.getColumns().add(nameColumn);
         tableView.getColumns().add(dateColumn);
-        tableView.getColumns().add(locationColumn);
-        tableView.getColumns().add(descriptionColumn);
-        tableView.getColumns().add(organizerColumn);
         tableView.getColumns().add(viewDetailsColumn);
+        
+        tableView.setItems(events);
 
         return tableView;
     }
 	@Override
 	protected void init() {
 		// TODO Auto-generated method stub
+		borderPane = new BorderPane();
+		this.scene = new Scene(borderPane, 600, 600);
+		
 		vbox = new VBox();
-		this.scene = new Scene(vbox);
+		
+		route = Route.getInstance();
+		
+		sdf = new SimpleDateFormat("dd-MM-yyyy");
+		
 		eventController = new EventController();
-		ArrayList<Event> eventsList = (ArrayList<Event>) eventController.viewAcceptedEvents();
-		ObservableList<Event> events = FXCollections.observableArrayList(eventsList);
-		tableView = initializeTableView(events);
-		TopMenuBar topMenuBar = new TopMenuBar();
-		menuBar = topMenuBar.initializeMenuBar();
 	}
 	@Override
 	protected void layout() {
 		// TODO Auto-generated method stub
-		vbox.getChildren().addAll(menuBar, tableView);
-		
+		borderPane.setCenter(vbox);
 	}
 	@Override
 	protected void style() {
@@ -107,9 +114,20 @@ public class AcceptedEventsView extends View{
 		
 	}
 	@Override
-	protected void setEventHandler() {
+	public void load() {
 		// TODO Auto-generated method stub
+		vbox.getChildren().clear();
 		
+		ArrayList<Event> eventsList = (ArrayList<Event>) eventController.viewAcceptedEvents();
+		ObservableList<Event> events = FXCollections.observableArrayList(eventsList);
+		tableView = initializeTableView(events);
+		
+		vbox.getChildren().add(tableView);
+		
+		TopMenuBar topMenuBar = new TopMenuBar();
+		menuBar = topMenuBar.initializeMenuBar();
+		
+		borderPane.setTop(menuBar);
 	}
 
 }

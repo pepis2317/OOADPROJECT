@@ -1,6 +1,7 @@
 package dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,7 +27,7 @@ public class EventDAO {
 			while (resultSet.next()) {
 				String id = resultSet.getString("event_id");
 				String name = resultSet.getString("event_name");
-				String date = resultSet.getString("event_date");
+				Date date = resultSet.getDate("event_date");
 				String location = resultSet.getString("event_location");
 				String description = resultSet.getString("event_description");
 				String organizerId = resultSet.getString("organizer_id");
@@ -50,7 +51,7 @@ public class EventDAO {
 			if (resultSet.next()) {
 				String id = resultSet.getString("event_id");
 				String name = resultSet.getString("event_name");
-				String date = resultSet.getString("event_date");
+				Date date = resultSet.getDate("event_date");
 				String location = resultSet.getString("event_location");
 				String description = resultSet.getString("event_description");
 				String organizerId = resultSet.getString("organizer_id");
@@ -73,7 +74,7 @@ public class EventDAO {
 			if (res.next()) {
 				String id = res.getString("event_id");
 				String name = res.getString("event_name");
-				String date = res.getString("event_date");
+				Date date = res.getDate("event_date");
 				String location = res.getString("event_location");
 				String description = res.getString("event_description");
 				String organizerId = res.getString("organizer_id");
@@ -84,27 +85,29 @@ public class EventDAO {
 		}
 		return null;
 	}
-	public void createEvent(String event_name, String event_date, String event_location, String event_description, String organizer_id) {
-		String query = "INSERT INTO Events (event_name, event_date, event_location, event_description, organizer_id) VALUES (?, ?, ?, ?, ?)";
+	public boolean createEvent(String event_name, Date event_date, String event_location, String event_description, String organizer_id) {
+		String query = "INSERT INTO "
+				+ "Events(event_name, event_date, event_location, event_description, organizer_id) "
+				+ "VALUES(?, ?, ?, ?, ?)";
 
 	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 	        preparedStatement.setString(1, event_name);
-	        preparedStatement.setString(2, event_date);
+	        preparedStatement.setDate(2, event_date);
 	        preparedStatement.setString(3, event_location);
 	        preparedStatement.setString(4, event_description);
 	        preparedStatement.setString(5, organizer_id);
 
 	        int rowsInserted = preparedStatement.executeUpdate();
 
-	        if (rowsInserted > 0) {
-	            System.out.println("Event created successfully!");
-	        }
+	        return rowsInserted > 0;
 	    } catch (SQLException e) {
 	        System.err.println("Error creating event: " + e.getMessage());
 	        e.printStackTrace();
 	    }
+	    
+	    return false;
 	}
-	public void deleteEvent(String event_id) {
+	public boolean deleteEvent(String event_id) {
 		String query = "DELETE FROM Events WHERE event_id = ?";
 
 	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -112,17 +115,15 @@ public class EventDAO {
 
 	        int rowsDeleted = preparedStatement.executeUpdate();
 
-	        if (rowsDeleted > 0) {
-	            System.out.println("Event deleted successfully.");
-	        } else {
-	            System.out.println("No event found with the given ID.");
-	        }
+	        return rowsDeleted > 0;
 	    } catch (SQLException e) {
 	        System.err.println("Error deleting event: " + e.getMessage());
 	        e.printStackTrace();
 	    }
+	    
+	    return false;
 	}
-	public void editEventName(String event_id, String event_name) {
+	public boolean editEventName(String event_id, String event_name) {
 		String query = "UPDATE Users SET event_name = ? WHERE event_id = ?";
 
 	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -131,21 +132,19 @@ public class EventDAO {
 
 	        int rowsUpdated = preparedStatement.executeUpdate();
 
-	        if (rowsUpdated > 0) {
-	            System.out.println("Event name updated successfully!");
-	        } else {
-	            System.out.println("No user found with the given id.");
-	        }
+	        return rowsUpdated > 0;
 	    } catch (SQLException e) {
 	        System.err.println("Error updating profile: " + e.getMessage());
 	        e.printStackTrace();
 	    }
+	    
+	    return false;
 	}
 	public List<Event> getAcceptedEvents(String user_id) {
 		List<Event> events = new ArrayList<>();
 	    String query = "SELECT Events.event_id, Events.event_name, Events.event_date, Events.event_location, Events.event_description, Events.organizer_id FROM Events "
 	    		+ "JOIN Invitations ON Invitations.event_id = Events.event_id "
-	    		+ "WHERE invitations.user_id = '?'"
+	    		+ "WHERE invitations.user_id = ?"
 	    		+ " AND Invitations.invitation_status = 'accepted';";
 	    
 	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -155,7 +154,7 @@ public class EventDAO {
 	            while (resultSet.next()) {
 	            	String id = resultSet.getString("event_id");
 					String name = resultSet.getString("event_name");
-					String date = resultSet.getString("event_date");
+					Date date = resultSet.getDate("event_date");
 					String location = resultSet.getString("event_location");
 					String description = resultSet.getString("event_description");
 					String organizerId = resultSet.getString("organizer_id");

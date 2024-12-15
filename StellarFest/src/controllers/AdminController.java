@@ -8,6 +8,7 @@ import models.Event;
 import models.Guest;
 import models.User;
 import models.Vendor;
+import utils.Response;
 
 public class AdminController {
 	private EventDAO eventDAO;
@@ -30,15 +31,29 @@ public class AdminController {
 		}
 		return eventDAO.getEventById(event_id);
 	}
-	public void deleteEvent(String event_id) {
+	public Response deleteEvent(String event_id) {
 		if(!event_id.isBlank()) {
-			eventDAO.deleteEvent(event_id);
+			if(eventDAO.deleteEvent(event_id)) {
+				return new Response(true, "Event deleted successfully.");
+			}
+			else {
+				return new Response(false, "Something went wrong!");
+			}
 		}
+		
+		return new Response(false, "Event not found!");
 	}
-	public void deleteUser(String user_id) {
+	public Response deleteUser(String user_id) {
 		if(!user_id.isBlank()) {
-			userDAO.deleteUser(user_id);
+			if(userDAO.deleteUser(user_id)) {
+				return new Response(true, "User deleted successfully.");
+			}
+			else {
+				return new Response(false, "Something went wrong!");
+			}
 		}
+		
+		return new Response(false, "User not found!");
 	}
 	public List<Guest> getGuestsByTransactionID(String event_id){
 		if(event_id.isBlank()) {
