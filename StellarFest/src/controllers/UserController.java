@@ -1,8 +1,8 @@
 package controllers;
 
+
 import java.util.ArrayList;
 import java.util.List;
-
 import dao.UserDAO;
 import factories.UserFactory;
 import models.User;

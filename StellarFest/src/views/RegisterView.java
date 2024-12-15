@@ -31,6 +31,7 @@ public class RegisterView extends View {
     public RegisterView() {
     	super();
     }
+
     
     @Override
     protected void init() {
@@ -45,13 +46,10 @@ public class RegisterView extends View {
         
         usernameLabel = new Label("Username:");
         usernameField = new TextField();
-
         passwordLabel = new Label("Password:");
         passwordField = new PasswordField();
-
         roleLabel = new Label("Select Role:");
         roleComboBox = new ComboBox<>();
-
         registerBtn = new Button("Register");
         loginBtn = new Button("Login");
         
@@ -63,7 +61,6 @@ public class RegisterView extends View {
     @Override
     protected void layout() {
 		roleComboBox.getItems().addAll("Admin", "Vendor", "Guest", "Event Organizer");
-        roleComboBox.setPromptText("Choose your role");
         
         roleMap.put("Admin", "admin");
     	roleMap.put("Vendor", "vendor");
@@ -114,7 +111,7 @@ public class RegisterView extends View {
 			route.redirect("login");
 		});
 	}
-
+    
     private void register(String email, String username, String password, String role) {
     	String selectedRole = roleMap.get(role);
     		

@@ -18,6 +18,8 @@ public class Route {
 	private static Stage stage = null;
 	private static HashMap<String, View> routes = null;
 	
+	
+	
 	public static void createInstance(Stage primaryStage) {
 		instance = new Route();
 		instance.setStage(primaryStage);
@@ -40,6 +42,7 @@ public class Route {
 	private void addRoutes() {
 		routes.put("login", new LoginView());
 		routes.put("register", new RegisterView());
+
 		routes.put("changeProfile", new ChangeProfileView());
 		routes.put("home", new HomeView());
 		routes.put("test", new TestView());

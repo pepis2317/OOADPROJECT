@@ -15,6 +15,7 @@ import javafx.scene.layout.VBox;
 import utils.Response;
 import utils.Route;
 
+
 public class LoginView extends View {
 	private BorderPane borderPane;
 	private GridPane gridPane;
@@ -23,7 +24,7 @@ public class LoginView extends View {
 	private TextField emailField;
 	private PasswordField passwordField;
 	private Button loginBtn;
-	public Button registerBtn;
+	private Button registerBtn;
 	private UserController userController;
 	
 	public LoginView() {
@@ -44,6 +45,7 @@ public class LoginView extends View {
         passwordLabel = new Label("Password:");
         passwordField = new PasswordField();
 
+
         loginBtn = new Button("Login");
         registerBtn = new Button("Register");
         
@@ -52,6 +54,7 @@ public class LoginView extends View {
 	
 	@Override
 	protected void layout() {
+
 		gridPane.add(emailLabel, 0, 0);
 		gridPane.add(emailField, 1, 0);
 		gridPane.add(passwordLabel, 0, 1);

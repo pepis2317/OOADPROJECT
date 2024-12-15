@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+
 import utils.DatabaseConnection;
 
 public class ProductDAO {
@@ -24,11 +25,32 @@ public class ProductDAO {
 	        int rowsInserted = preparedStatement.executeUpdate();
 
 	        if (rowsInserted > 0) {
-	            System.out.println("User registered successfully!");
+	            System.out.println("Added product successfully!");
 	        }
 	    } catch (SQLException e) {
 	        System.err.println("Error registering user: " + e.getMessage());
 	        e.printStackTrace();
 	    }
+	}
+	public List<Product> getProducts(String vendor_id){
+		List<Product> products = new ArrayList<>();
+		String query = "SELECT * FROM Products WHERE vendor_id = ?";
+		try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+			preparedStatement.setString(1, vendor_id);
+			ResultSet resultSet = preparedStatement.executeQuery();
+
+			if (resultSet.next()) {
+				String id = resultSet.getString("product_id");
+				String name = resultSet.getString("product_name");
+				String description = resultSet.getString("product_description");
+				String vendor= resultSet.getString("vendor_id");
+				Product product = ProductFactory.create(id, name, description, vendor);
+				products.add(product);
+				
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return products;
 	}
 }
