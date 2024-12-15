@@ -3,6 +3,7 @@ package utils;
 import java.util.HashMap;
 
 import javafx.stage.Stage;
+
 import views.AcceptedEventsView;
 import views.AdminAllUsersView;
 import views.AdminAllEventsView;
@@ -13,7 +14,9 @@ import views.LoginView;
 import views.ManageProductsView;
 import views.IParameterView;
 import views.InvitationsView;
+
 import views.RegisterView;
+import views.TestView;
 import views.View;
 
 public class Route {
@@ -46,6 +49,7 @@ public class Route {
 //		Basic user routes
 		routes.put("login", new LoginView());
 		routes.put("register", new RegisterView());
+
 		routes.put("changeProfile", new ChangeProfileView());
 		routes.put("home", new HomeView());
 		routes.put("eventDetails", new EventDetailsView());
@@ -61,6 +65,7 @@ public class Route {
 		
 //		Vendor only route
 		routes.put("manageProducts", new ManageProductsView());
+
 	}
 	
 	public void redirect(String key) {
@@ -85,8 +90,10 @@ public class Route {
 			return;
 		}
 		
+
 //		Set params to view and load the view
 		IParameterView parameterView = (IParameterView)view;
+
 		parameterView.setParams(params);
 		
 		view.load();

@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import utils.Route;
 
+
 public class Main extends Application {
 	private Stage primaryStage;
 	private Route route;

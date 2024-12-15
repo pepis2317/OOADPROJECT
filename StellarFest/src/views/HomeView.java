@@ -1,6 +1,7 @@
 package views;
 
 import javafx.scene.Scene;
+
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
 import javafx.scene.layout.BorderPane;
@@ -9,11 +10,14 @@ import javafx.scene.text.Font;
 import models.User;
 import utils.UserSession;
 
+
 public class HomeView extends View {
 	private BorderPane borderPane;
 	private VBox vbox;
+
 	private MenuBar menuBar;
 	private Label welcomeLabel, roleLabel;
+
 	
     public HomeView() {
     	super();
@@ -24,14 +28,17 @@ public class HomeView extends View {
     	borderPane = new BorderPane();
     	this.scene = new Scene(borderPane, 600, 600);
     	
+
     	vbox = new VBox();
     	
     	welcomeLabel = new Label();
     	roleLabel = new Label();
+
 	}
 	
     @Override
     protected void layout() {
+
     	vbox.getChildren().addAll(welcomeLabel, roleLabel);
     	
 		borderPane.setCenter(vbox);
@@ -41,9 +48,11 @@ public class HomeView extends View {
     protected void style() {
 		vbox.setSpacing(10);
 		vbox.setStyle("-fx-padding: 20; -fx-alignment: center;");
+
 		
     	welcomeLabel.setFont(new Font(32));
     	roleLabel.setFont(new Font(16));
+
 	}
     
     @Override
