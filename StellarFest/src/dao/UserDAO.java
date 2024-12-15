@@ -62,6 +62,28 @@ public class UserDAO {
 		
 		return null;
 	}
+	
+	public User getUserById(String user_id) {
+		String query = "SELECT * FROM Users WHERE user_id = ?";
+		try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+			preparedStatement.setString(1, user_id);
+			ResultSet res = preparedStatement.executeQuery();
+
+			if (res.next()) {
+				String id = res.getString("user_id");
+				String email = res.getString("user_email");
+				String name = res.getString("user_name");
+				String password = res.getString("user_password");
+				String role = res.getString("user_role");
+				
+				return UserFactory.create(id, email, name, password, role);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 
 	public boolean deleteUser(String user_id) {
 		String query = "DELETE FROM Users WHERE user_id = ?";
@@ -146,7 +168,8 @@ public class UserDAO {
 	            + "FROM Users "
 	            + "JOIN Invitations ON Invitations.user_id = Users.user_id "
 	            + "WHERE Invitations.event_id = ? "
-	            + "AND Invitations.invitation_role = 'vendor';";
+	            + "AND Invitations.invitation_status = 'accepted'"
+	            + "AND Users.user_role = 'vendor';";
 	    
 	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 	        preparedStatement.setString(1, event_id);
@@ -179,14 +202,13 @@ public class UserDAO {
 	            + "FROM Users "
 	            + "JOIN Invitations ON Invitations.user_id = Users.user_id "
 	            + "WHERE Invitations.event_id = ? "
-	            + "AND Invitations.invitation_role = 'guest';";
+	            + "AND Invitations.invitation_status = 'accepted'"
+	            + "AND Users.user_role = 'guest';";
 	    
 	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-	        // Set the parameter before executing the query
 	        preparedStatement.setString(1, event_id);
 	        
 	        try (ResultSet resultSet = preparedStatement.executeQuery()) {
-	            // Process the result set
 	            while (resultSet.next()) {
 	                String id = resultSet.getString("user_id");
 	                String email = resultSet.getString("user_email");
@@ -195,7 +217,6 @@ public class UserDAO {
 	                String role = resultSet.getString("user_role");
 	                User user = UserFactory.create(id, email, name, password, role);
 	                
-	                // Ensure the user is castable to Vendor before adding
 	                if (user instanceof Guest) {
 	                    guests.add((Guest) user);
 	                } else {
@@ -217,10 +238,7 @@ public class UserDAO {
 	            + "WHERE Invitations.invitation_role = 'guest';";
 	    
 	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-	        // Set the parameter before executing the query
-	        
 	        try (ResultSet resultSet = preparedStatement.executeQuery()) {
-	            // Process the result set
 	            while (resultSet.next()) {
 	                String id = resultSet.getString("user_id");
 	                String email = resultSet.getString("user_email");
@@ -229,16 +247,15 @@ public class UserDAO {
 	                String role = resultSet.getString("user_role");
 	                User user = UserFactory.create(id, email, name, password, role);
 	                
-	                // Ensure the user is castable to Vendor before adding
 	                if (user instanceof Guest) {
 	                    guests.add((Guest) user);
 	                } else {
-	                    System.err.println("Error: User is not a Vendor.");
+	                    System.err.println("Error: User is not a Guest.");
 	                }
 	            }
 	        }
 	    } catch (SQLException e) {
-	        System.err.println("Error retrieving vendors: " + e.getMessage());
+	        System.err.println("Error retrieving guests: " + e.getMessage());
 	        e.printStackTrace();
 	    }
 	    return guests;
@@ -261,7 +278,6 @@ public class UserDAO {
 	                String role = resultSet.getString("user_role");
 	                User user = UserFactory.create(id, email, name, password, role);
 	                
-	                // Ensure the user is castable to Vendor before adding
 	                if (user instanceof Vendor) {
 	                    vendors.add((Vendor) user);
 	                } else {

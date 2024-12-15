@@ -95,7 +95,7 @@ public class LoginView extends View {
         Response response = userController.login(email, password);
         
         if(!response.isSuccessful()) {
-        	showAlert(Alert.AlertType.ERROR, "Error", response.getMessage());
+        	showAlert(Alert.AlertType.ERROR, "Error in Logging In", response.getMessage());
         }
     }
 }
