@@ -7,8 +7,11 @@ public abstract class View {
 	protected Scene scene;
 
 	public View() {
-		// TODO Auto-generated constructor stub
 		this.scene = null;
+		
+    	this.init();
+        this.layout();
+        this.style();
 	}
 	
 	public Scene getScene() {
@@ -26,5 +29,5 @@ public abstract class View {
 	protected abstract void init();
 	protected abstract void layout();
 	protected abstract void style();
-	protected abstract void setEventHandler();
+	public abstract void load();
 }
