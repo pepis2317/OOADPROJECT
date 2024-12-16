@@ -12,6 +12,7 @@ import views.EventDetailsView;
 import views.HomeView;
 import views.LoginView;
 import views.ManageProductsView;
+import views.OrganizedEventsView;
 import views.IParameterView;
 import views.InvitationsView;
 
@@ -59,7 +60,7 @@ public class Route {
 		routes.put("adminAllEvents", new AdminAllEventsView());
 		
 //		Vendor and Guest routes
-		routes.put("organizedEvents", null);
+		routes.put("organizedEvents", new OrganizedEventsView());
 		routes.put("acceptedEvents", new AcceptedEventsView());
 		routes.put("invitations", new InvitationsView());
 		

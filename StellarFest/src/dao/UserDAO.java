@@ -196,6 +196,7 @@ public class UserDAO {
 	    }
 	    return vendors;
 	}
+	
 	public List<Guest> getGuests(String event_id) {
 	    List<Guest> guests = new ArrayList<>();
 	    String query = "SELECT Users.user_id, Users.user_email, Users.user_name, Users.user_password, Users.user_role "
@@ -290,6 +291,70 @@ public class UserDAO {
 	        e.printStackTrace();
 	    }
 	    return vendors;
+	}
+	public List<Vendor> getUninvitedVendors(){
+		List<Vendor> vendors = new ArrayList<>();
+		String query = "SELECT Users.user_id, Users.user_email, Users.user_name, Users.user_password, Users.user_role "
+	            + "FROM Users "
+	            + "LEFT JOIN Invitations ON Invitations.user_id = Users.user_id "
+	            + "WHERE Invitations.user_id IS NULL "
+	            + "AND Users.user_role = 'vendor';";
+	    
+	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	        
+	        try (ResultSet resultSet = preparedStatement.executeQuery()) {
+	            while (resultSet.next()) {
+	                String id = resultSet.getString("user_id");
+	                String email = resultSet.getString("user_email");
+	                String name = resultSet.getString("user_name");
+	                String password = resultSet.getString("user_password");
+	                String role = resultSet.getString("user_role");
+	                User user = UserFactory.create(id, email, name, password, role);
+	                
+	                if (user instanceof Vendor) {
+	                    vendors.add((Vendor) user);
+	                } else {
+	                    System.err.println("Error: User is not a Vendor.");
+	                }
+	            }
+	        }
+	    } catch (SQLException e) {
+	        System.err.println("Error retrieving vendors: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+	    return vendors;
+	}
+	public List<Guest> getUninvitedGuests(){
+		List<Guest> guests= new ArrayList<>();
+		String query = "SELECT Users.user_id, Users.user_email, Users.user_name, Users.user_password, Users.user_role "
+	            + "FROM Users "
+	            + "LEFT JOIN Invitations ON Invitations.user_id = Users.user_id "
+	            + "WHERE Invitations.user_id IS NULL "
+	            + "AND Users.user_role = 'guest';";
+	    
+	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	        
+	        try (ResultSet resultSet = preparedStatement.executeQuery()) {
+	            while (resultSet.next()) {
+	                String id = resultSet.getString("user_id");
+	                String email = resultSet.getString("user_email");
+	                String name = resultSet.getString("user_name");
+	                String password = resultSet.getString("user_password");
+	                String role = resultSet.getString("user_role");
+	                User user = UserFactory.create(id, email, name, password, role);
+	                
+	                if (user instanceof Guest) {
+	                    guests.add((Guest) user);
+	                } else {
+	                    System.err.println("Error: User is not a Vendor.");
+	                }
+	            }
+	        }
+	    } catch (SQLException e) {
+	        System.err.println("Error retrieving vendors: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+	    return guests;
 	}
 
 }

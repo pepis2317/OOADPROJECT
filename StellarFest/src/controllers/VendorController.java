@@ -6,6 +6,7 @@ import dao.EventDAO;
 import dao.ProductDAO;
 import dao.UserDAO;
 import models.Event;
+import models.Product;
 import models.User;
 import utils.Response;
 import utils.Route;
