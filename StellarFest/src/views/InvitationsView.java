@@ -143,7 +143,7 @@ public class InvitationsView extends View {
         declineColumn.setCellFactory(new Callback<>() {
         	public TableCell<Invitation, Void> call(TableColumn<Invitation, Void> param) {
                 return new TableCell<>() {
-                    private final Button button = new Button("Accept");
+                    private final Button button = new Button("Decline");
 
                     {
                         button.setOnAction(event -> {
@@ -186,6 +186,7 @@ public class InvitationsView extends View {
         
         return tableView;
     }
+
 	
 	@Override
 	protected void init() {

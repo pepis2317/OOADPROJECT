@@ -62,10 +62,10 @@ public class AdminAllUsersView extends View {
 							
 							if(response.isSuccessful()) {
                             	refreshTable();
-                            	showAlert(Alert.AlertType.INFORMATION, "Event deleted successfully", response.getMessage());
+                            	showAlert(Alert.AlertType.INFORMATION, "User deleted successfully", response.getMessage());
                             }
                             else {
-                            	showAlert(Alert.AlertType.ERROR, "Error in Deleting Event", response.getMessage());
+                            	showAlert(Alert.AlertType.ERROR, "Error in Deleting User", response.getMessage());
                             }
                         });
                     }

@@ -7,6 +7,7 @@ import dao.UserDAO;
 import models.Event;
 import models.Guest;
 import models.Vendor;
+import utils.Response;
 
 public class EventOrganizerController {
 	private EventDAO eventDAO;
@@ -31,6 +32,12 @@ public class EventOrganizerController {
 	public List<Vendor> getVendors(){
 		return userDAO.getAllVendors();
 	}
+	public List<Vendor> getUninvitedVendors(){
+		return userDAO.getUninvitedVendors();
+	}
+	public List<Guest> getUninvitedGuests(){
+		return userDAO.getUninvitedGuests();
+	}
 	
 	public List<Guest> getGuestsByTransactionID(String event_id){
 		if(event_id.isBlank()) {
@@ -46,7 +53,11 @@ public class EventOrganizerController {
 		return userDAO.getVendors(event_id);
 	}
 
-	public void editEventName(String event_id, String event_name) {
+	public Response editEventName(String event_id, String event_name) {
+		if(event_id.isBlank() || event_name.isBlank()) {
+			return new Response(false, "One or more fields are missing!");
+		}
 		eventDAO.editEventName(event_id, event_name);
+		return new Response(true, "Event Name Edited Successfully.");
 	}
 }
