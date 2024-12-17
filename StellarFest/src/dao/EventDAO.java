@@ -41,28 +41,30 @@ public class EventDAO {
 		return events;
 	}
 	
-	public List<Event> getEventsByOrganizerId(String organizer_id){
-		List<Event> events = new ArrayList<>();
-		String query = "SELECT * FROM Events WHERE organizer_id = ?";
-		try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-			preparedStatement.setString(1, organizer_id);
-			ResultSet resultSet = preparedStatement.executeQuery();
+	public List<Event> getEventsByOrganizerId(String organizer_id) {
+	    List<Event> events = new ArrayList<>();
+	    String query = "SELECT * FROM Events WHERE organizer_id = ?";
+	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	        preparedStatement.setString(1, organizer_id);
+	        ResultSet resultSet = preparedStatement.executeQuery();
 
-			if (resultSet.next()) {
-				String id = resultSet.getString("event_id");
-				String name = resultSet.getString("event_name");
-				Date date = resultSet.getDate("event_date");
-				String location = resultSet.getString("event_location");
-				String description = resultSet.getString("event_description");
-				String organizerId = resultSet.getString("organizer_id");
-				Event event = EventFactory.create(id,name,date,location, description, organizerId);
-				events.add(event);
-				
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return events;
+	        while (resultSet.next()) { 
+	            String id = resultSet.getString("event_id");
+	            String name = resultSet.getString("event_name");
+	            Date date = resultSet.getDate("event_date");
+	            String location = resultSet.getString("event_location");
+	            String description = resultSet.getString("event_description");
+	            String organizerId = resultSet.getString("organizer_id");
+
+	            Event event = EventFactory.create(id, name, date, location, description, organizerId);
+	            events.add(event);
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+
+	    return events;
 	}
 	
 	public Event getEventById(String event_id){
@@ -124,8 +126,7 @@ public class EventDAO {
 	    return false;
 	}
 	public boolean editEventName(String event_id, String event_name) {
-		String query = "UPDATE Users SET event_name = ? WHERE event_id = ?";
-
+		String query = "UPDATE Events SET event_name = ? WHERE event_id = ?";
 	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 	        preparedStatement.setString(1, event_name);
 	        preparedStatement.setString(2, event_id); 

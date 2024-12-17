@@ -25,6 +25,10 @@ public class InvitationController {
 		if(!user_email.isEmpty()) {
 			User user = userDAO.getUserByEmail(user_email);
 			
+			if(user == null) {
+				return new Response(false, "User not found!");
+			}
+			
 			if(invitationDAO.createInvitation(event_id, user.getUser_id(), user.getUser_role())) {
 				return new Response(true, "Invitation sent to " + 
 						userDAO.getUserByEmail(user_email).getUser_name() + 
@@ -35,7 +39,7 @@ public class InvitationController {
 			}
 		}
 		
-		return new Response(false, "Email field must not be empty!");
+		return new Response(false, "User is not selected!");
 	}
 	public List<Invitation> getInvitations(){
 		return invitationDAO.getInvitations();
