@@ -292,16 +292,19 @@ public class UserDAO {
 	    }
 	    return vendors;
 	}
-	public List<Vendor> getUninvitedVendors(){
+	public List<Vendor> getUninvitedVendors(String event_id){
 		List<Vendor> vendors = new ArrayList<>();
 		String query = "SELECT Users.user_id, Users.user_email, Users.user_name, Users.user_password, Users.user_role "
 	            + "FROM Users "
-	            + "LEFT JOIN Invitations ON Invitations.user_id = Users.user_id "
-	            + "WHERE Invitations.user_id IS NULL "
-	            + "AND Users.user_role = 'vendor';";
+				+ "WHERE NOT EXISTS("
+	            + "SELECT NULL FROM Invitations "
+	            + "WHERE Invitations.user_id = users.user_id "
+	            + "AND invitations.event_id = ?) "
+	            + "AND users.user_role = 'vendor'";
 	    
 	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-	        
+	    	preparedStatement.setString(1, event_id);
+	    	
 	        try (ResultSet resultSet = preparedStatement.executeQuery()) {
 	            while (resultSet.next()) {
 	                String id = resultSet.getString("user_id");
@@ -324,15 +327,18 @@ public class UserDAO {
 	    }
 	    return vendors;
 	}
-	public List<Guest> getUninvitedGuests(){
+	public List<Guest> getUninvitedGuests(String event_id){
 		List<Guest> guests= new ArrayList<>();
 		String query = "SELECT Users.user_id, Users.user_email, Users.user_name, Users.user_password, Users.user_role "
 	            + "FROM Users "
-	            + "LEFT JOIN Invitations ON Invitations.user_id = Users.user_id "
-	            + "WHERE Invitations.user_id IS NULL "
-	            + "AND Users.user_role = 'guest';";
-	    
+				+ "WHERE NOT EXISTS("
+	            + "SELECT * FROM Invitations "
+	            + "WHERE Invitations.user_id = users.user_id "
+	            + "AND Invitations.event_id = ?) "
+	            + "AND Users.user_role = 'guest'";
+		
 	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	    	preparedStatement.setString(1, event_id);
 	        
 	        try (ResultSet resultSet = preparedStatement.executeQuery()) {
 	            while (resultSet.next()) {
@@ -346,12 +352,12 @@ public class UserDAO {
 	                if (user instanceof Guest) {
 	                    guests.add((Guest) user);
 	                } else {
-	                    System.err.println("Error: User is not a Vendor.");
+	                    System.err.println("Error: User is not a Guest.");
 	                }
 	            }
 	        }
 	    } catch (SQLException e) {
-	        System.err.println("Error retrieving vendors: " + e.getMessage());
+	        System.err.println("Error retrieving guests: " + e.getMessage());
 	        e.printStackTrace();
 	    }
 	    return guests;

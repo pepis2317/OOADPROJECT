@@ -38,6 +38,9 @@ public class AcceptedEventsView extends View{
     }
     public TableView<Event> initializeTableView(ObservableList<Event> events){
     	TableView<Event> tableView = new TableView<>();
+    	
+        TableColumn<Event, String> idColumn = new TableColumn<>("Event Id");
+		idColumn.setCellValueFactory(new PropertyValueFactory<Event, String>("event_id"));
         
         TableColumn<Event, String> nameColumn = new TableColumn<>("Event Name");
         nameColumn.setCellValueFactory(new PropertyValueFactory<Event, String>("event_name"));
@@ -50,6 +53,9 @@ public class AcceptedEventsView extends View{
 				return new SimpleStringProperty(sdf.format(param.getValue().getEvent_date()));
 			}
 		});
+        
+        TableColumn<Event, String> locationColumn = new TableColumn<>("Event Location");
+		locationColumn.setCellValueFactory(new PropertyValueFactory<Event, String>("event_location"));
         
         TableColumn<Event, Void> viewDetailsColumn = new TableColumn<>("View Details");
         viewDetailsColumn.setCellFactory(new Callback<>() {
@@ -81,8 +87,10 @@ public class AcceptedEventsView extends View{
             
         });
 
+        tableView.getColumns().add(idColumn);
         tableView.getColumns().add(nameColumn);
         tableView.getColumns().add(dateColumn);
+        tableView.getColumns().add(locationColumn);
         tableView.getColumns().add(viewDetailsColumn);
         
         tableView.setItems(events);
@@ -126,7 +134,7 @@ public class AcceptedEventsView extends View{
 		
 		TopMenuBar topMenuBar = new TopMenuBar();
 		menuBar = topMenuBar.initializeMenuBar();
-		
+				
 		borderPane.setTop(menuBar);
 	}
 

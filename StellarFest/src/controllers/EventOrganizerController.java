@@ -32,11 +32,11 @@ public class EventOrganizerController {
 	public List<Vendor> getVendors(){
 		return userDAO.getAllVendors();
 	}
-	public List<Vendor> getUninvitedVendors(){
-		return userDAO.getUninvitedVendors();
+	public List<Vendor> getUninvitedVendors(String event_id){
+		return userDAO.getUninvitedVendors(event_id);
 	}
-	public List<Guest> getUninvitedGuests(){
-		return userDAO.getUninvitedGuests();
+	public List<Guest> getUninvitedGuests(String event_id){
+		return userDAO.getUninvitedGuests(event_id);
 	}
 	
 	public List<Guest> getGuestsByTransactionID(String event_id){

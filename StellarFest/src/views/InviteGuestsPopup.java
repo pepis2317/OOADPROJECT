@@ -31,10 +31,11 @@ public class InviteGuestsPopup extends PopupView {
 	public InviteGuestsPopup(String event_id){
 		super();
 		this.event_id = event_id;
-		inviteButtonPress();
+		load();
+		show();
 		
 	}
-	public TableView<Guest> initializeTableView(ObservableList<Guest> guests){
+	private TableView<Guest> initializeTableView(ObservableList<Guest> guests){
     	TableView<Guest> tableView = new TableView<>();
     	
         TableColumn<Guest, String> emailColumn = new TableColumn<>("Email");
@@ -51,7 +52,7 @@ public class InviteGuestsPopup extends PopupView {
                 // Add listener to update selectedGuests list when checkbox is toggled
                 checkBox.selectedProperty().addListener((obs, wasSelected, isNowSelected) -> {
                     Guest currentUser = getTableView().getItems().get(getIndex());
-                    if (currentUser != null) { // Ensure currentUser is not null
+                    if (currentUser != null) {
                         if (isNowSelected) {
                             if (!selectedGuests.contains(currentUser)) {
                                 selectedGuests.add(currentUser);
@@ -68,10 +69,10 @@ public class InviteGuestsPopup extends PopupView {
                 super.updateItem(isSelected, empty);
 
                 if (empty || getTableView().getItems().get(getIndex()) == null) {
-                    setGraphic(null); // Clear graphic for empty rows
+                    setGraphic(null);
                 } else {
-                    checkBox.setSelected(isSelected != null && isSelected); // Handle null safely
-                    setGraphic(checkBox); // Add CheckBox to the cell
+                    checkBox.setSelected(isSelected != null && isSelected);
+                    setGraphic(checkBox);
                 }
             }
         });
@@ -88,28 +89,42 @@ public class InviteGuestsPopup extends PopupView {
 	protected void init() {
 		// TODO Auto-generated method stub
 		vbox = new VBox(20);
+		vbox.setAlignment(Pos.CENTER);
+
 		selectedGuests = new ArrayList<>();
 		eventOrganizerController = new EventOrganizerController();
 		invitationController = new InvitationController();
-		List<Guest> guestsList = eventOrganizerController.getUninvitedGuests();
+		
+		inviteButton = new Button("Invite Users");
+	}
+	@Override
+	public void load() {
+		List<Guest> guestsList = eventOrganizerController.getUninvitedGuests(this.event_id);
 		ObservableList<Guest> guests = FXCollections.observableArrayList(guestsList);
 		guestTableView = initializeTableView(guests);
-		inviteButton = new Button("Invite Users");
+		
 		vbox.getChildren().addAll(guestTableView, inviteButton);
-		vbox.setAlignment(Pos.CENTER);
 		this.scene = new Scene(vbox);
+		
+		setEventHandler();
 	}
-	protected void inviteButtonPress() {
+	private void setEventHandler() {
 		inviteButton.setOnAction(e->{
+			if(selectedGuests.isEmpty()) {
+				showAlert(Alert.AlertType.ERROR, "Error in Inviting Guests", "No guests selected!");
+				return;
+			}
+			
 			for(Guest v : selectedGuests) {
 				Response response = invitationController.sendInvitation(this.event_id, v.getUser_email());
 				if(response.isSuccessful()) {
-	            	showAlert(Alert.AlertType.INFORMATION, "Event Name Edited Successfully", response.getMessage());
+	            	showAlert(Alert.AlertType.INFORMATION, "Guest Invited Successfully", response.getMessage());
 	            }
 	            else {
-	            	showAlert(Alert.AlertType.ERROR, "Error in Editing Event Name", response.getMessage());
+	            	showAlert(Alert.AlertType.ERROR, "Error in Inviting Guest", response.getMessage());
 	            }
 			}
+			
 			this.stage.close();
 		});
 	}

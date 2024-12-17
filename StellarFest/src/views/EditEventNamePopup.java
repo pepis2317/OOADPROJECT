@@ -29,8 +29,8 @@ public class EditEventNamePopup extends PopupView {
 		super();
 		this.event = event;
 		this.onEditSuccess = onEditSuccess;
-		editNameField.setText(event.getEvent_name());
-		editButtonPress();
+		load();
+		show();
 	}
 	@Override
 	protected void init() {
@@ -51,14 +51,17 @@ public class EditEventNamePopup extends PopupView {
         
         vbox.setPadding(new Insets(20));
         vbox.setAlignment(Pos.CENTER);
-        
-        vbox.getChildren().addAll(gridPane, editButton);
+	}
+	@Override
+	public void load() {
+		editNameField.setText(event.getEvent_name());
+		
+		vbox.getChildren().addAll(gridPane, editButton);
 		this.scene = new Scene(vbox);
 		
-		
+		setEventHandler();
 	}
-
-	protected void editButtonPress() {
+	private void setEventHandler() {
 		editButton.setOnAction(e->{
 			String name = editNameField.getText();
 			Response response = eventOrganizerController.editEventName(event.getEvent_id(), name);

@@ -56,6 +56,9 @@ public class AdminAllEventsView extends View {
 				return new SimpleStringProperty(sdf.format(param.getValue().getEvent_date()));
 			}
 		});
+        
+        TableColumn<Event, String> locationColumn = new TableColumn<>("Event Location");
+		locationColumn.setCellValueFactory(new PropertyValueFactory<Event, String>("event_location"));
 
 		TableColumn<Event, Void> viewDetailsColumn = new TableColumn<>("View Details");
 		viewDetailsColumn.setCellFactory(new Callback<>() {
@@ -122,6 +125,7 @@ public class AdminAllEventsView extends View {
 		tableView.getColumns().add(idColumn);
 		tableView.getColumns().add(nameColumn);
 		tableView.getColumns().add(dateColumn);
+		tableView.getColumns().add(locationColumn);
 		tableView.getColumns().add(viewDetailsColumn);
 		tableView.getColumns().add(deleteColumn);
 		

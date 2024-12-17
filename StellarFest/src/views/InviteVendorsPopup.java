@@ -16,8 +16,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
-import models.Guest;
-import models.User;
 import models.Vendor;
 import utils.Response;
 
@@ -32,10 +30,10 @@ public class InviteVendorsPopup extends PopupView{
 	public InviteVendorsPopup(String event_id){
 		super();
 		this.event_id = event_id;
-		inviteButtonPress();
-		
+		load();
+		show();
 	}
-	public TableView<Vendor> initializeTableView(ObservableList<Vendor> vendors){
+	private TableView<Vendor> initializeTableView(ObservableList<Vendor> vendors){
     	TableView<Vendor> tableView = new TableView<>();
     	
         TableColumn<Vendor, String> emailColumn = new TableColumn<>("Email");
@@ -89,26 +87,39 @@ public class InviteVendorsPopup extends PopupView{
 	protected void init() {
 		// TODO Auto-generated method stub
 		vbox = new VBox(20);
+		vbox.setAlignment(Pos.CENTER);
+
 		selectedVendors = new ArrayList<>();
 		eventOrganizerController = new EventOrganizerController();
 		invitationController = new InvitationController();
-		List<Vendor> vendorsList = eventOrganizerController.getUninvitedVendors();
+		
+		inviteButton = new Button("Invite Users");
+	}
+	@Override
+	public void load() {
+		List<Vendor> vendorsList = eventOrganizerController.getUninvitedVendors(this.event_id);
 		ObservableList<Vendor> vendors = FXCollections.observableArrayList(vendorsList);
 		vendorTableView = initializeTableView(vendors);
-		inviteButton = new Button("Invite Users");
+		
 		vbox.getChildren().addAll(vendorTableView, inviteButton);
-		vbox.setAlignment(Pos.CENTER);
 		this.scene = new Scene(vbox);
+		
+		setEventHandler();
 	}
-	protected void inviteButtonPress() {
+	private void setEventHandler() {
 		inviteButton.setOnAction(e->{
+			if(selectedVendors.isEmpty()) {
+				showAlert(Alert.AlertType.ERROR, "Error in Inviting Vendors", "No vendors selected!");
+				return;
+			}
+			
 			for(Vendor v : selectedVendors) {
 				Response response = invitationController.sendInvitation(this.event_id, v.getUser_email());
 				if(response.isSuccessful()) {
-	            	showAlert(Alert.AlertType.INFORMATION, "Event Name Edited Successfully", response.getMessage());
+	            	showAlert(Alert.AlertType.INFORMATION, "Vendor Invited Successfully", response.getMessage());
 	            }
 	            else {
-	            	showAlert(Alert.AlertType.ERROR, "Error in Editing Event Name", response.getMessage());
+	            	showAlert(Alert.AlertType.ERROR, "Error in Inviting Vendor", response.getMessage());
 	            }
 			}
 			this.stage.close();

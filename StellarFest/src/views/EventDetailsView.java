@@ -199,6 +199,7 @@ public class EventDetailsView extends View implements IParameterView {
 		menuBar = topMenu.initializeMenuBar();
 		
 		borderPane.setTop(menuBar);
+				
 		setEventHandler();
 	}
 	protected void setEventHandler() {

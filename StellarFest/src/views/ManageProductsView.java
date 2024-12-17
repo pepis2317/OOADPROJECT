@@ -41,7 +41,7 @@ public class ManageProductsView extends View{
     public TableView<Product> initializeTableView(ObservableList<Product> products){
     	TableView<Product> tableView = new TableView<>();
     	
-        TableColumn<Product, String> idColumn = new TableColumn<>("Id");
+        TableColumn<Product, String> idColumn = new TableColumn<>("Product Id");
         idColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("product_id"));
         
         TableColumn<Product, String> nameColumn = new TableColumn<>("Product Name");

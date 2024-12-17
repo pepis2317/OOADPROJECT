@@ -1,14 +1,11 @@
 package views;
 
-import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import controllers.AdminController;
 import controllers.EventController;
 import controllers.EventOrganizerController;
 import javafx.beans.property.SimpleStringProperty;
@@ -33,8 +30,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.stage.Popup;
-import javafx.stage.Stage;
 import javafx.util.Callback;
 import models.Event;
 import models.User;
@@ -46,8 +41,8 @@ import utils.UserSession;
 public class OrganizedEventsView extends View{
 	private EventController eventController;
 	private Button addButton;
-	private Label nameLabel, descriptionLabel, dateLabel, locationLabel, editNameLabel;
-	private TextField nameField, descriptionField, locationField, editNameField;
+	private Label nameLabel, descriptionLabel, dateLabel, locationLabel;
+	private TextField nameField, descriptionField, locationField;
 	private DatePicker dateField;
 	private User user;
 	private EventOrganizerController eventOrganizerController;
@@ -80,6 +75,9 @@ public class OrganizedEventsView extends View{
 				return new SimpleStringProperty(sdf.format(param.getValue().getEvent_date()));
 			}
 		});
+        
+        TableColumn<Event, String> locationColumn = new TableColumn<>("Event Location");
+		locationColumn.setCellValueFactory(new PropertyValueFactory<Event, String>("event_location"));
 
 		TableColumn<Event, Void> viewDetailsColumn = new TableColumn<>("View Details");
 		viewDetailsColumn.setCellFactory(new Callback<>() {
@@ -137,6 +135,7 @@ public class OrganizedEventsView extends View{
 		tableView.getColumns().add(idColumn);
 		tableView.getColumns().add(nameColumn);
 		tableView.getColumns().add(dateColumn);
+		tableView.getColumns().add(locationColumn);
 		tableView.getColumns().add(viewDetailsColumn);
 		tableView.getColumns().add(editColumn);
 		

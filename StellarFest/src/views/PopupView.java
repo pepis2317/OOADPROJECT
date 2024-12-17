@@ -7,8 +7,12 @@ import javafx.stage.Stage;
 public abstract class PopupView {
 	protected Stage stage;
 	protected Scene scene;
+	
 	public PopupView() {
 		this.init();
+	}
+	
+	public void show() {
 		this.stage = new Stage();
 		this.stage.setScene(scene);
 		this.stage.show();
@@ -21,4 +25,5 @@ public abstract class PopupView {
         alert.showAndWait();
     }
 	protected abstract void init();
+	public abstract void load();
 }
