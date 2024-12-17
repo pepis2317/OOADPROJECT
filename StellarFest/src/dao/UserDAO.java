@@ -196,6 +196,7 @@ public class UserDAO {
 	    }
 	    return vendors;
 	}
+	
 	public List<Guest> getGuests(String event_id) {
 	    List<Guest> guests = new ArrayList<>();
 	    String query = "SELECT Users.user_id, Users.user_email, Users.user_name, Users.user_password, Users.user_role "
@@ -290,6 +291,76 @@ public class UserDAO {
 	        e.printStackTrace();
 	    }
 	    return vendors;
+	}
+	public List<Vendor> getUninvitedVendors(String event_id){
+		List<Vendor> vendors = new ArrayList<>();
+		String query = "SELECT Users.user_id, Users.user_email, Users.user_name, Users.user_password, Users.user_role "
+	            + "FROM Users "
+				+ "WHERE NOT EXISTS("
+	            + "SELECT NULL FROM Invitations "
+	            + "WHERE Invitations.user_id = users.user_id "
+	            + "AND invitations.event_id = ?) "
+	            + "AND users.user_role = 'vendor'";
+	    
+	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	    	preparedStatement.setString(1, event_id);
+	    	
+	        try (ResultSet resultSet = preparedStatement.executeQuery()) {
+	            while (resultSet.next()) {
+	                String id = resultSet.getString("user_id");
+	                String email = resultSet.getString("user_email");
+	                String name = resultSet.getString("user_name");
+	                String password = resultSet.getString("user_password");
+	                String role = resultSet.getString("user_role");
+	                User user = UserFactory.create(id, email, name, password, role);
+	                
+	                if (user instanceof Vendor) {
+	                    vendors.add((Vendor) user);
+	                } else {
+	                    System.err.println("Error: User is not a Vendor.");
+	                }
+	            }
+	        }
+	    } catch (SQLException e) {
+	        System.err.println("Error retrieving vendors: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+	    return vendors;
+	}
+	public List<Guest> getUninvitedGuests(String event_id){
+		List<Guest> guests= new ArrayList<>();
+		String query = "SELECT Users.user_id, Users.user_email, Users.user_name, Users.user_password, Users.user_role "
+	            + "FROM Users "
+				+ "WHERE NOT EXISTS("
+	            + "SELECT * FROM Invitations "
+	            + "WHERE Invitations.user_id = users.user_id "
+	            + "AND Invitations.event_id = ?) "
+	            + "AND Users.user_role = 'guest'";
+		
+	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	    	preparedStatement.setString(1, event_id);
+	        
+	        try (ResultSet resultSet = preparedStatement.executeQuery()) {
+	            while (resultSet.next()) {
+	                String id = resultSet.getString("user_id");
+	                String email = resultSet.getString("user_email");
+	                String name = resultSet.getString("user_name");
+	                String password = resultSet.getString("user_password");
+	                String role = resultSet.getString("user_role");
+	                User user = UserFactory.create(id, email, name, password, role);
+	                
+	                if (user instanceof Guest) {
+	                    guests.add((Guest) user);
+	                } else {
+	                    System.err.println("Error: User is not a Guest.");
+	                }
+	            }
+	        }
+	    } catch (SQLException e) {
+	        System.err.println("Error retrieving guests: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+	    return guests;
 	}
 
 }

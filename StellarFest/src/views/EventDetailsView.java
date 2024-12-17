@@ -11,6 +11,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TableColumn;
@@ -40,6 +41,7 @@ public class EventDetailsView extends View implements IParameterView {
 	private SimpleDateFormat sdf;
 	private TableView<User> guestsTableView;
 	private TableView<User> vendorsTableView;
+	private Button addVendors, addGuests;
 	
 //	admin, guest, vendor
 	
@@ -93,11 +95,12 @@ public class EventDetailsView extends View implements IParameterView {
         
     }
 
-	public HBox initializeAttendeeTable() {
+	public HBox initializeAttendeeTable(User user) {
         HBox tables = new HBox();
         
         Label guestsTableLabel = new Label("Guests attending");
         Label vendorsTableLabel = new Label("Vendors attending");
+        //have a vbox for inputting new guest and vendors
         
         Font font = new Font(16);
         guestsTableLabel.setFont(font);
@@ -108,6 +111,11 @@ public class EventDetailsView extends View implements IParameterView {
         
         guestsTable.getChildren().addAll(guestsTableLabel, guestsTableView);
         vendorsTable.getChildren().addAll(vendorsTableLabel, vendorsTableView);
+        if(user.getUser_role().equals("eventorganizer")) {
+        	
+        	guestsTable.getChildren().add(addGuests);
+        	vendorsTable.getChildren().add(addVendors);
+        }
         
         guestsTable.setAlignment(Pos.CENTER);
         vendorsTable.setAlignment(Pos.CENTER);
@@ -141,7 +149,7 @@ public class EventDetailsView extends View implements IParameterView {
 		        guestsTableView = initializeTableView(guests);
 		        vendorsTableView = initializeTableView(vendors);
 		        
-				attendeeTable = initializeAttendeeTable();
+				attendeeTable = initializeAttendeeTable(user);
 				
 				vbox.getChildren().add(attendeeTable);
 			default:
@@ -162,6 +170,8 @@ public class EventDetailsView extends View implements IParameterView {
     	eventController = new EventController();
 		adminController = new AdminController();
 		userController = new UserController();
+		addVendors = new Button("Add Vendors");
+    	addGuests = new Button("Add Guests");
 	}
 	@Override
 	protected void layout() {
@@ -189,5 +199,15 @@ public class EventDetailsView extends View implements IParameterView {
 		menuBar = topMenu.initializeMenuBar();
 		
 		borderPane.setTop(menuBar);
+				
+		setEventHandler();
+	}
+	protected void setEventHandler() {
+		addGuests.setOnAction(e->{
+			new InviteGuestsPopup(this.event.getEvent_id());
+		});
+		addVendors.setOnAction(e->{
+			new InviteVendorsPopup(this.event.getEvent_id());
+		});
 	}
 }

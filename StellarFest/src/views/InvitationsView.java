@@ -42,7 +42,7 @@ public class InvitationsView extends View {
 		super();
     }
 	public TableView<Invitation> initializeTableView(ObservableList<Invitation> invites){
-    	TableView<Invitation> tableView = new TableView<>(invites);
+    	TableView<Invitation> tableView = new TableView<>();
     	
         TableColumn<Invitation, String> idColumn = new TableColumn<>("Invitation Id");
         idColumn.setCellValueFactory(new PropertyValueFactory<Invitation, String>("invitation_id"));
@@ -68,6 +68,18 @@ public class InvitationsView extends View {
 				Invitation invite = param.getValue();
 	        	Event event = eventController.getEventDetails(invite.getEvent_id());
 				return new SimpleStringProperty(sdf.format(event.getEvent_date()));
+			}
+		});
+        
+        TableColumn<Invitation, String> locationColumn = new TableColumn<>("Event Location");
+		locationColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Invitation,String>, ObservableValue<String>>() {
+			
+			@Override
+			public ObservableValue<String> call(CellDataFeatures<Invitation, String> param) {
+				// TODO Auto-generated method stub
+				Invitation invite = param.getValue();
+	        	Event event = eventController.getEventDetails(invite.getEvent_id());
+				return new SimpleStringProperty(event.getEvent_location());
 			}
 		});
         
@@ -143,7 +155,7 @@ public class InvitationsView extends View {
         declineColumn.setCellFactory(new Callback<>() {
         	public TableCell<Invitation, Void> call(TableColumn<Invitation, Void> param) {
                 return new TableCell<>() {
-                    private final Button button = new Button("Accept");
+                    private final Button button = new Button("Decline");
 
                     {
                         button.setOnAction(event -> {
@@ -177,6 +189,7 @@ public class InvitationsView extends View {
         tableView.getColumns().add(idColumn);
         tableView.getColumns().add(nameColumn);
         tableView.getColumns().add(dateColumn);
+        tableView.getColumns().add(locationColumn);
         tableView.getColumns().add(statusColumn);
         tableView.getColumns().add(viewDetailsColumn);
         tableView.getColumns().add(acceptColumn);
@@ -186,6 +199,7 @@ public class InvitationsView extends View {
         
         return tableView;
     }
+
 	
 	@Override
 	protected void init() {
@@ -226,7 +240,7 @@ public class InvitationsView extends View {
         TopMenuBar topMenu = new TopMenuBar();
 		menuBar = topMenu.initializeMenuBar();
 		
-		borderPane.setTop(menuBar);
+		borderPane.setTop(menuBar);		
 	}
 
 }

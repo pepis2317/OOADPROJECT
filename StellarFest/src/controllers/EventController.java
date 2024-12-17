@@ -21,8 +21,11 @@ public class EventController {
 
 	public Response createEvent(String event_name, String event_date, String event_location,String event_description, String organizer_id ) {
 		if(!event_name.isBlank() && !event_date.isBlank() && !event_description.isBlank() && !organizer_id.isBlank() && !event_location.isBlank()) {
-			if(event_location.length() < 5 || event_description.length() > 200) {
-				return new Response(false, "Event description must be more than 5 and less than 200 characters long!");
+			if(event_location.length() < 5) {
+				return new Response(false, "Event location must be more than 5 characters long!");
+			}
+			if(event_description.length() > 200) {
+				return new Response(false, "Event description must be less than 200 characters long!");
 			}
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 	        
@@ -30,7 +33,7 @@ public class EventController {
 	            LocalDate inputDate = LocalDate.parse(event_date, formatter);
 	            LocalDate today = LocalDate.now();
 	            if (inputDate.isAfter(today)) {
-	            	Date date = Date.valueOf(event_date);
+	            	Date date = Date.valueOf(inputDate);
 	                if(eventDAO.createEvent(event_name, date, event_location, event_description, organizer_id)) {
 	                	return new Response(true, "Date added sucessfully.");
 	                }
