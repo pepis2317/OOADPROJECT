@@ -7,6 +7,7 @@ import controllers.EventOrganizerController;
 import controllers.InvitationController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -88,6 +89,7 @@ public class InviteVendorsPopup extends PopupView{
 		// TODO Auto-generated method stub
 		vbox = new VBox(20);
 		vbox.setAlignment(Pos.CENTER);
+		vbox.setPadding(new Insets(20));
 
 		selectedVendors = new ArrayList<>();
 		eventOrganizerController = new EventOrganizerController();

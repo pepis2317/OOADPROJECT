@@ -9,6 +9,7 @@ import controllers.EventController;
 import controllers.UserController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -180,6 +181,7 @@ public class EventDetailsView extends View implements IParameterView {
 	@Override
 	protected void style() {
 		vbox.setSpacing(30);
+		vbox.setPadding(new Insets(20));
 	}
 	
 	@Override
