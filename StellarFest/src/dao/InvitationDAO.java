@@ -46,7 +46,7 @@ public class InvitationDAO {
 			preparedStatement.setString(1, user_id);
 			ResultSet resultSet = preparedStatement.executeQuery();
 
-			if (resultSet.next()) {
+			while (resultSet.next()) {
 				String id = resultSet.getString("invitation_id");
 				String eventId = resultSet.getString("event_id");
 				String userId = resultSet.getString("user_id");
@@ -61,27 +61,27 @@ public class InvitationDAO {
 		}
 		return invites;
 	}
-	public List<Invitation> getPendingInvitations(String user_id){
-		List<Invitation> invites = new ArrayList<>();
-		String query = "SELECT * FROM Invitations WHERE user_id = ? AND invitation_status = 'pending'";
-		try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-			preparedStatement.setString(1, user_id);
-			ResultSet resultSet = preparedStatement.executeQuery();
+	public List<Invitation> getPendingInvitations(String user_id) {
+	    List<Invitation> invites = new ArrayList<>();
+	    String query = "SELECT * FROM Invitations WHERE user_id = ? AND invitation_status = 'pending'";
+	    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	        preparedStatement.setString(1, user_id);
+	        ResultSet resultSet = preparedStatement.executeQuery();
 
-			if (resultSet.next()) {
-				String id = resultSet.getString("invitation_id");
-				String eventId = resultSet.getString("event_id");
-				String userId = resultSet.getString("user_id");
-				String status = resultSet.getString("invitation_status");
-				String role = resultSet.getString("invitation_role");
-				Invitation invite = InvitationFactory.create(id, eventId, userId, status, role);
-				invites.add(invite);
-				
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return invites;
+	        // Use while to iterate over all rows
+	        while (resultSet.next()) {
+	            String id = resultSet.getString("invitation_id");
+	            String eventId = resultSet.getString("event_id");
+	            String userId = resultSet.getString("user_id");
+	            String status = resultSet.getString("invitation_status");
+	            String role = resultSet.getString("invitation_role");
+	            Invitation invite = InvitationFactory.create(id, eventId, userId, status, role);
+	            invites.add(invite);
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return invites;
 	}
 	public boolean createInvitation(String event_id, String user_id, String user_role) {
 		String query = "INSERT INTO Invitations(event_id, user_id, invitation_status, invitation_role) "

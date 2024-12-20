@@ -50,9 +50,6 @@ public class VendorController {
 			return new Response(false, "Product description cannot be more than 200 characters long!");
 		}
 		
-		if(!productDAO.addProduct(product_name, product_description, user.getUser_id())) {
-			return new Response(false, "Something went wrong!");
-		}
 		
 		return new Response(true, "Product " + product_name + " was added successfully!");
 	}
