@@ -40,16 +40,12 @@ public class VendorController {
 	}
 	
 	private Response checkManagerVendorInput(String product_description, String product_name) {
-		UserSession session = UserSession.getInstance();
-		User user = session.getUser();
-		
 		if(product_description.isBlank() || product_name.isBlank()) {
 			return new Response(false, "Product name and description cannot be empty!");
 		}
 		if(product_description.length() > 200) {
 			return new Response(false, "Product description cannot be more than 200 characters long!");
 		}
-		
 		
 		return new Response(true, "Product " + product_name + " was added successfully!");
 	}
